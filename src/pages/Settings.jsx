@@ -1,17 +1,33 @@
 import React, { useRef, useState } from 'react'
 import { Link } from 'react-router-dom';
-import { teamStore, teamId } from '../store';
-import { addTeam, removeTeam, renameTeam } from '../actions';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { next } from '../slices/teamId';
+import { add, remove, rename } from '../slices/teamArray';
 
  const duration_const = 60; // seconds
  const words_const = 30; // words
 function Settings() {
+  function createTeamObj(id, name) {
+    return {
+    team: {
+      id: id,
+      name: name,
+      score: 0,
+      words: []
+    }
+    }
+  }
+
+  const reduxTeamId = useSelector(state => state.teamId);
+  const reduxTeamArray = useSelector(state => state.teamArray.value);
+  const dispatch = useDispatch();
 
   const [duration, setDuration] = useState(duration_const);
   const  [wordsCount, setWordsCount] = useState(words_const);
 
   // Локальное состояние - массив команд для отображения на странице
-  const [teams, setTeams] = useState(teamStore.getState());
+  const [teams, setTeams] = useState(reduxTeamArray);
 
   const [currentTeamName, setCurrentTeamName] = useState('');
 
@@ -37,25 +53,26 @@ function Settings() {
           <button onClick={() => {
 
             // Отправляю в redux новую команду с название из инпута
-            teamStore.dispatch(addTeam(teamId.getState(), currentTeamName));
+            dispatch(add(createTeamObj(currentTeamName)));
 
             // Добавляю новую команду локально
             setTeams([...teams, {
-              id: teamId.getState(),
+              id: reduxTeamId,
               name: currentTeamName,
               score: 0,
               words: []
             }]);
 
             // увеличиваю id для следующей команды
-            teamId.dispatch({type: 'NEXT'});
+            dispatch(next());
 
             // Очищаем поле ввода
             setCurrentTeamName('');
 
             // Отладка
-            console.log('teamStore state: ', teamStore.getState());
-            console.log('Next id: ', teamId.getState());
+            console.log('Локальные команды', teams);
+            console.log('teamStore state: ', reduxTeamArray);
+            console.log('Next id: ', reduxTeamId);
             console.log('currentTeamName: ', currentTeamName);
           }}>
             Добавить команду
