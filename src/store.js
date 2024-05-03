@@ -1,14 +1,14 @@
-import { createStore } from "redux";
+import { legacy_createStore as createStore } from "redux";
 
 const initialTeams = [
   {
-    id: '0',
+    id: 0,
     name: 'Red Hot Chilly Peppers',
     score: 0,
     guessedWords: []
   },
   {
-    id: '1',
+    id: 1,
     name: 'Green Picky Cucumbers',
     score: 0,
     guessedWords: []
@@ -28,19 +28,23 @@ const initialTeams = [
 const teamChangeReducer = (state = initialTeams, action) => {
   switch (action.type) {
     case 'ADD_TEAM':
-      return [...state, action.team];
+      return [...state, action.payload.team];
     case 'REMOVE_TEAM':
-      return state.filter(team => team.id !== action.team.id);
+      return state.filter(team => team.id !== action.payload.team.id);
     // Need to transfer team with same data but new name
     case 'RENAME_TEAM':
       const newState = state.map((t) => {
         if (t.id === action.team.id) {
-          return Object.assign({}, t, {name: action.team.name})
+          return Object.assign({}, t, {name: action.payload.team.name})
         } else {
           return t;
         }
       });
       return newState;
+    case 'UPDATE_SCORE':
+      let updatedTeam = state.find(team => team.id === action.payload.team.id);
+      updatedTeam.score += action.payload.team.score;
+      return state.map(team => team.id === action.payload.team.id ? updatedTeam : team);
     default:
       return state;
   }

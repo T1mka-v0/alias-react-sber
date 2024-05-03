@@ -19,13 +19,6 @@ function Settings() {
     <div>
           <h1>Настройки</h1>
           <div>
-            <ul>
-              {teams.map((team) => {
-                return (<li key={team.id}>{team.name}</li>)
-              })}
-            </ul>
-          </div>
-          <div>
             <input
               id='new-team'
               type="text"
@@ -60,6 +53,13 @@ function Settings() {
           }}>
             Добавить команду
           </button>
+          <div>
+            <ul>
+              {teams.map((team) => {
+                return (<li key={team.id}>{team.name}</li>)
+              })}
+            </ul>
+          </div>
           <h2>Продолжительность раунда: {duration} сек.</h2>
           
           <h2>Количество слов для победы: {wordsCount}</h2>
