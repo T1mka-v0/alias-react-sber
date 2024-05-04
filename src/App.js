@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 
+import { Theme, DocStyles } from './SberStyles';
 function App() {
 
   const path = 'https://jsonplaceholder.typicode.com/users';
@@ -12,21 +13,21 @@ function App() {
 
   return (
     <div className="App">
+      <DocStyles />
+      <Theme />
       <h1>Alias</h1>
       <nav>
         <ul>
           <li>
-            <Link to={'menu'}>Home</Link>
+            <Link to={'settings'}>Продолжить игру</Link>
           </li>
           <li>
-            <Link to={'settings'}>Settings</Link>
+            <Link to={'settings'}>Начать игру</Link>
           </li>
           <li>
             <Link to={'rules'}>Rules</Link>
           </li>
-          <li>
-            <Link to={'game'}>Game</Link>
-          </li>
+          
         </ul>
       </nav>
     </div>

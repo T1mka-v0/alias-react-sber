@@ -6,30 +6,28 @@ import { teamStore } from './store'
 
 import App from './App';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import MainMenu from './pages/MainMenu';
 import ErrorPage from './pages/error-page';
 import Settings from './pages/Settings';
 import Rules from './pages/Rules';
 import Game from './pages/Game';
-import NewGame from './pages/NewGame';
+
+import { DeviceThemeProvider } from '@salutejs/plasma-ui';
+import { GlobalStyle } from './GlobalStyle';
+import { createGlobalStyle } from 'styled-components';
 
 let isGameStarted = true;
 
 const router = createBrowserRouter([
   {
-    path: 'menu',
-    element: <MainMenu/>
-  },
-  {
-    path: 'menu/game',
+    path: 'game',
     element: <Game />,
   },
   {
-    path: 'menu/newgame',
+    path: 'newgame',
     element: <Settings />
   },
   {
-    path: 'menu/rules',
+    path: 'rules',
     element: <Rules />
   },
   {
@@ -50,11 +48,14 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router}>
-      <Provider store={teamStore}>
-        
-      </Provider>
-    </RouterProvider>
+    <DeviceThemeProvider>
+      <RouterProvider router={router}>
+        <Provider store={teamStore}>
+          
+        </Provider>
+        <GlobalStyle />
+      </RouterProvider>
+    </DeviceThemeProvider>
   </React.StrictMode>
 );
 
