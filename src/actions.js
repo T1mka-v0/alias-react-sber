@@ -48,3 +48,39 @@ export const updateScore = (id, newScore, newWords) => {
         }
     }
 }
+
+export const setPenaltyForSkip = (bool) => {
+    return {
+        type: 'SET_PENALTY_FOR_SKIP',
+        payload: {
+            penaltyForSkip: bool
+        }
+    }
+}
+
+export const setCommonLastWord = (bool) => {
+    return {
+        type: 'SET_COMMON_LAST_WORD',
+        payload: {
+            commonLastWord: bool
+        }
+    }
+}
+
+export const setWordsCountToWin = (number) => {
+    return {
+        type: 'SET_WORDS_TO_WIN',
+        payload: {
+            wordsCountToWin: number
+        }
+    }
+}
+
+export const setRoundDuration = (number) => {
+    return {
+        type: 'SET_ROUND_DURATION',
+        payload: {
+            roundDuration: number
+        }
+    }
+}

@@ -1,0 +1,13 @@
+{
+    items: [
+        {
+            command: {
+                type: "smart_app_data",
+                action: {
+                    type: "add_note",
+                    payload: "схоДить в магазин"
+                }
+            }
+        }
+    ]
+}

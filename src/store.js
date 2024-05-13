@@ -1,3 +1,4 @@
+import { act } from "react";
 import { legacy_createStore as createStore } from "redux";
 
 const initialTeams = [
@@ -44,6 +45,7 @@ const teamChangeReducer = (state = initialTeams, action) => {
     case 'UPDATE_SCORE':
       let updatedTeam = state.find(team => team.id === action.payload.team.id);
       updatedTeam.score += action.payload.team.score;
+      updatedTeam.guessedWords.push(...action.payload.team.guessedWords);
       return state.map(team => team.id === action.payload.team.id ? updatedTeam : team);
     default:
       return state;
@@ -62,3 +64,25 @@ const teamIdReducer = (state = 2, action) => {
 }
 // Содержит id последней добавленной команды
 export const teamId = createStore(teamIdReducer);
+
+const settingsInitialState = {
+  roundDuration: 60,
+  wordsCountToWin: 30,
+  commonLastWord: false,
+  penaltyForSkip: false
+}
+export const settingsReducer = (state = settingsInitialState, action) => {
+  switch (action.type) {
+    case 'SET_ROUND_DURATION':
+      return Object.assign({}, state, {roundDuration: action.payload.roundDuration});
+    case 'SET_WORDS_TO_WIN':
+      return Object.assign({}, state, {wordsCountToWin: action.payload.wordsCountToWin});
+    case 'SET_COMMON_LAST_WORD':
+      return Object.assign({}, state, {commonLastWord: action.payload.commonLastWord});
+    case 'SET_PENALTY_FOR_SKIP':
+      return Object.assign({}, state, {penaltyForSkip: action.payload.penaltyForSkip});
+    default:
+      return state;
+  }
+}
+export const settingsStore = createStore(settingsReducer);

@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { teamStore, teamId } from '../store';
 import { updateScore } from '../actions';
+import { DocStyles, Theme } from '../SberStyles';
+import { Link } from 'react-router-dom';
+import { Button } from '@salutejs/plasma-ui';
+
+import Timer from '../components/Timer';
 
 const defaultTeam = {
     id: 0,
@@ -66,12 +71,13 @@ function Game() {
         const newTeam = {
             ...currentTeam,
             score: currentTeam.score + guessedWords.length,
-            guessedWords: [...teams[turn].guessedWords, ...guessedWords]
+            guessedWords: guessedWords
         }
         setSkippedWords([]);
         setguessedWords([]);
-        console.log(`Состояние команды ${newTeam.name}: `, newTeam);
+        console.log(`Локальное состояние команды ${newTeam.name}: `, newTeam);
         teamStore.dispatch(updateScore(newTeam.id, newTeam.score, newTeam.guessedWords));
+        console.log('teamStore state: ', teamStore.getState())
         setCurrentTeam(teams[turn]);
     }, [turn])
 
@@ -81,9 +87,14 @@ function Game() {
     }, [skippedWords, guessedWords])
 
   return (
-    isLoaded ?
+    <>
+        <DocStyles />
+        <Theme />
+        {isLoaded ?
         <div>
             <h2>Ход команды: {currentTeam.name}</h2>
+
+            <Timer duration={10} />
 
             <h2>{words[currentWordIndex]?.value || 'No more words'}</h2>
             <button onClick={() => {
@@ -103,9 +114,16 @@ function Game() {
                 onClick={() => {nextTurn()}}
             >Следующая команда</button>
             
+            <Link to={'/result'}>
+                <Button onClick={() => {nextTurn()}}>
+                    Окончить игру
+                </Button>
+            </Link>
         </div>
     :  
         <h2>Loading...</h2>
+}
+    </>
   )
 }
 

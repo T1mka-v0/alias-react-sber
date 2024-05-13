@@ -3,7 +3,8 @@ import { salutejs_sber__dark } from '@salutejs/plasma-tokens/themes'; // Или 
 import {
     text, // Цвет текста
     background, // Цвет подложки
-    gradient, // Градиент
+    gradient,
+    dark03, // Градиент
 } from '@salutejs/plasma-tokens';
 
 const DocumentStyle = createGlobalStyle`
@@ -13,7 +14,7 @@ const DocumentStyle = createGlobalStyle`
         background-image: ${gradient};
     }
 `;
-const ThemeStyle = createGlobalStyle(salutejs_sber__dark);
+const ThemeStyle = createGlobalStyle(dark03);
 
 export const GlobalStyle = () => (
     <>

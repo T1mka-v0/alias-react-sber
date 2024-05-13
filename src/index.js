@@ -14,6 +14,7 @@ import Game from './pages/Game';
 import { DeviceThemeProvider } from '@salutejs/plasma-ui';
 import { GlobalStyle } from './GlobalStyle';
 import { createGlobalStyle } from 'styled-components';
+import Result from './pages/Result';
 
 let isGameStarted = true;
 
@@ -42,21 +43,24 @@ const router = createBrowserRouter([
   {
     path: 'settings/game',
     element: <Game />
+  },
+  {
+    path: 'result',
+    element: <Result />
   }
 ])
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <DeviceThemeProvider>
-      <RouterProvider router={router}>
-        <Provider store={teamStore}>
-          
-        </Provider>
-        <GlobalStyle />
-      </RouterProvider>
-    </DeviceThemeProvider>
-  </React.StrictMode>
+  <DeviceThemeProvider>
+  <GlobalStyle />
+    <RouterProvider router={router}>
+      <Provider store={teamStore}>
+        
+      </Provider>
+      
+    </RouterProvider>
+  </DeviceThemeProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
