@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 
-function Timer({ duration }) {
+const Timer = forwardRef(({ duration }, ref) => {
   const [timer, setTimer] = useState(duration);
   const [isActive, setIsActive] = useState(false);
 
@@ -21,22 +21,26 @@ function Timer({ duration }) {
     }
   }, [timer]);
 
-  const handleStart = () => {
-    setIsActive(true);
-  };
-
-  const resetTimer = () => {
-    setIsActive(false);
-    setTimer(duration);
-  }
+  useImperativeHandle(ref, () => {
+    const startTimer = () => {
+      setIsActive(true);
+    };
+  
+    const resetTimer = () => {
+      setIsActive(false);
+      setTimer(duration);
+    }
+  
+    const pauseTimer = () => {
+      setIsActive(false);
+    }
+  })
 
   return (
     <div>
       <p>Оставшееся время: {timer}</p>
-      <button onClick={handleStart}>Запустить таймер</button>
-      <button onClick={resetTimer}>Сбросить таймер</button>
     </div>
   );
-}
+});
 
 export default Timer;

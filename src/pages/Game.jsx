@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { teamStore, teamId } from '../store';
+import React, { useEffect, useRef, useState } from 'react'
+import { teamStore, teamId, settingsStore } from '../store';
 import { updateScore } from '../actions';
 import { DocStyles, Theme } from '../SberStyles';
 import { Link } from 'react-router-dom';
 import { Button } from '@salutejs/plasma-ui';
 
-import Timer from '../components/Timer';
+// import Timer from '../components/Timer';
 
 const defaultTeam = {
     id: 0,
@@ -86,6 +86,41 @@ function Game() {
         console.log('Пропущенные: ', skippedWords);
     }, [skippedWords, guessedWords])
 
+    // Таймер
+    const requestedDuration = settingsStore.getState().roundDuration;
+    const [timer, setTimer] = useState(requestedDuration);
+    const [isActive, setIsActive] = useState(false);
+    
+    useEffect(() => {
+        if (isActive && timer > 0) {
+        const intervalId = setInterval(() => {
+            setTimer((prevTimer) => prevTimer - 1);
+        }, 1000);
+    
+        return () => clearInterval(intervalId);
+        }
+    }, [isActive, timer]);
+    
+    useEffect(() => {
+        if (timer === 0) {
+        console.log('Таймер истек!');
+        // Здесь можно вызвать функцию, которую нужно выполнить после истечения времени
+        }
+    }, [timer]);
+    
+    const startTimer = () => {
+        setIsActive(true);
+    };
+    
+    const resetTimer = () => {
+        setIsActive(false);
+        setTimer(requestedDuration);
+    }
+
+    const pauseTimer = () => {
+        setIsActive(false);
+    }
+
   return (
     <>
         <DocStyles />
@@ -93,8 +128,12 @@ function Game() {
         {isLoaded ?
         <div>
             <h2>Ход команды: {currentTeam.name}</h2>
-
-            <Timer duration={10} />
+            <div>
+                <div>Оставшееся время: {timer}</div>
+                <Button onClick={startTimer}>
+                    Запустить таймер
+                </Button>
+            </div>
 
             <h2>{words[currentWordIndex]?.value || 'No more words'}</h2>
             <button onClick={() => {
@@ -119,6 +158,10 @@ function Game() {
                     Окончить игру
                 </Button>
             </Link>
+
+            <Button onClick={startTimer}>
+                Запустить таймер
+            </Button>
         </div>
     :  
         <h2>Loading...</h2>
