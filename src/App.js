@@ -5,6 +5,7 @@ import { teamStore, teamId } from './store';
 import { Theme, DocStyles } from './SberStyles';
 
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
+import { Button, Container } from '@salutejs/plasma-ui';
 const devType = "development";
 
 const artem_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJlMmQ3NWI3Yy1kODFjLTQwMTQtODg5ZS0xODU5ZDFiZjFkYTgiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxNTc4MDcwNiwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE1Njk0Mjk2LCJzaWQiOiJkOGQxZWE3Mi1hNWYxLTRkZGEtYTI3Ny1iNmYwYzM4NWM5NWEifQ.c6tLOJLhKbVFRZPnFP8QTGl1uLprwIocYl8Mn47OhgrVdz_kJBuaB1ln3Sn-KGqmxWrB_vfq50FQGqaZH3ohWgqjm6CaBfzbWiBJKTKj0NFesA1FOMOprK2gdyxKsfn5uGJi-BOvX_hGLfHlrrPz6sLSN3r_BChX-LR-6AsPIDdEE2iG41wedUnzMLD6tEKBcwF2cjIah9Lv-7V4YLqZMuqYqYdQEkcXNV9LS5tXkbU0ge_d5eqhbxm9p34Wvqlx64_RTun7N9KNh5HgdJyZfyM26Mb3ya60D_sqCTZStbAema2MY5Gqtu6NJZDqncdj9G003nJaksHZgrtH5A0cbKfCWYfNqehFPRvTgxnoDqv-dmjlMC1niQAnCi3KMAY00t1rNalZHD-hZhTzaHQyksJ-Di1prtM1SzAOzDvnzb5LG-M6eb87hWKwLOzsV6v6wgJ73infEx6KWxIo2wqdW9RK30_us9nug3VSHfpSDUyfaDNfQPU3cpoXjswH5arnvFbI7KOlQ_jwcQgGH0mxqvXP2zdhh0ryB7CXLZwswMHQFhsSIpg3HzFiKNvPorHEiqcxb_g2BtmgxR0dFfENbAyE8MW6LtuCh5wCDvjDT83CuhWUy3qSm_QC2hZFcezLfUnwagamCGxOehO40Um-UqEJ3lwt6GCFJUg7f4qjMkU"
@@ -33,22 +34,18 @@ const initialize = (getState) => {
 function getStateForAssistant() {
   const state = teamStore.state;
 }
-const assistant = initialize(() => getStateForAssistant());
-assistant.on('data', (command) => {
-  console.log("Command received", command);
+// const assistant = initialize(() => getStateForAssistant());
+// assistant.on('data', (command) => {
+//   console.log("Command received", command);
+//     // Подписка на команды ассистента, в т.ч. команда инициализации смартапа.
+//     // Ниже представлен пример обработки голосовых команд "ниже"/"выше"
+// });
 
-  
-    // Подписка на команды ассистента, в т.ч. команда инициализации смартапа.
-    // Ниже представлен пример обработки голосовых команд "ниже"/"выше"
-    
-    
-});
+// assistant.on('start', (event) => {
+//   let initialData = assistant.getInitialData();
 
-assistant.on('start', (event) => {
-  let initialData = assistant.getInitialData();
-
-  console.log(`assistant.on(start)`, event, initialData);
-});
+//   console.log(`assistant.on(start)`, event, initialData);
+// });
 function App() {
 
   const path = 'https://jsonplaceholder.typicode.com/users';
@@ -59,20 +56,27 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App" style={{display:"flex", flexDirection:"column", alignContent:"center", justifyContent:"center"}}>
       <DocStyles />
       <Theme />
-      <h1>Alias</h1>
+      <h1 style={{display:"flex", justifyContent:"center"}}>Alias</h1>
       <nav>
-        <ul>
+        <ul style={{listStyleType: "none"}}>
           <li>
-            <Link to={'settings'}>Продолжить игру</Link>
+            <Container style={{padding:"16px 64px"}}>
+              <Link to={'settings'}>
+                <Button style={{width:"100%"}}>Начать игру</Button>
+              </Link>
+            </Container>
           </li>
           <li>
-            <Link to={'settings'}>Начать игру</Link>
-          </li>
-          <li>
-            <Link to={'rules'}>Rules</Link>
+            <Container style={{padding:"16px 64px"}}>
+              <Link to={'rules'}>
+                <Button style={{width:"100%"}}>
+                  Правила
+                </Button>
+              </Link>
+            </Container>
           </li>
           
         </ul>

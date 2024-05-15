@@ -143,10 +143,6 @@ function Settings() {
             <Button text='Начать игру'></Button>
             </Container>
           </Link>
-
-          <Button onClick={() => {navigate("/game")}}>
-                Ыыыы
-          </Button>
     </div>
   )
 }
