@@ -5,14 +5,14 @@ const initialTeams = [
   {
     id: 0,
     name: 'Red Hot Chilly Peppers',
-    score: 0,
-    guessedWords: []
+    guessedWords: [],
+    skippedWords: []
   },
   {
     id: 1,
     name: 'Green Picky Cucumbers',
-    score: 0,
-    guessedWords: []
+    guessedWords: [],
+    skippedWords: []
   }
 ]
 
@@ -35,7 +35,7 @@ const teamChangeReducer = (state = initialTeams, action) => {
     // Need to transfer team with same data but new name
     case 'RENAME_TEAM':
       const newState = state.map((t) => {
-        if (t.id === action.team.id) {
+        if (t.id === action.payload.team.id) {
           return Object.assign({}, t, {name: action.payload.team.name})
         } else {
           return t;
@@ -44,8 +44,8 @@ const teamChangeReducer = (state = initialTeams, action) => {
       return newState;
     case 'UPDATE_SCORE':
       let updatedTeam = state.find(team => team.id === action.payload.team.id);
-      updatedTeam.score += action.payload.team.score;
-      updatedTeam.guessedWords.push(...action.payload.team.guessedWords);
+      updatedTeam.guessedWords?.push(...action.payload.team.guessedWords);
+      updatedTeam.skippedWords?.push(...action.payload.team.skippedWords)
       return state.map(team => team.id === action.payload.team.id ? updatedTeam : team);
     default:
       return state;

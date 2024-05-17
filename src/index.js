@@ -24,10 +24,6 @@ const router = createBrowserRouter([
     element: <Game />,
   },
   {
-    path: 'newgame',
-    element: <Settings />
-  },
-  {
     path: 'rules',
     element: <Rules />
   },
@@ -41,10 +37,6 @@ const router = createBrowserRouter([
     element: <Settings />
   },
   {
-    path: 'settings/game',
-    element: <Game />
-  },
-  {
     path: 'result',
     element: <Result />
   }
@@ -52,7 +44,7 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <DeviceThemeProvider>
+  <DeviceThemeProvider responsiveTypo>
   <GlobalStyle />
     <RouterProvider router={router}>
       <Provider store={teamStore}>

@@ -61,7 +61,7 @@ function App() {
       <Theme />
       <h1 style={{display:"flex", justifyContent:"center"}}>Alias</h1>
       <nav>
-        <ul style={{listStyleType: "none"}}>
+        <ul style={{listStyleType: "none", padding:"0px 0px"}}>
           <li>
             <Container style={{padding:"16px 64px"}}>
               <Link to={'settings'}>

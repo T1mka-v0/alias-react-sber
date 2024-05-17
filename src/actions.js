@@ -36,14 +36,14 @@ export const renameTeam = (id, newName) => {
 }
 
 // Обновить счет команды и добавить им угаданные слова
-export const updateScore = (id, newScore, newWords) => {
+export const updateScore = (id, newGuessedWords, newSkippedWords) => {
     return {
         type: "UPDATE_SCORE",
         payload: {
             team: {
                 id: id,
-                score: newScore,
-                guessedWords: newWords
+                guessedWords: newGuessedWords,
+                skippedWords: newSkippedWords
             }
         }
     }

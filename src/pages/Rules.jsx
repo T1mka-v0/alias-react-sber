@@ -1,8 +1,13 @@
 import React from 'react'
+import { DocStyles, Theme } from '../SberStyles'
 
 function Rules() {
   return (
-    <div>Rules</div>
+    <div>
+      <DocStyles />
+      <Theme />
+      Правила
+    </div>
   )
 }
 
