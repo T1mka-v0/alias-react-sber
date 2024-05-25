@@ -58,6 +58,8 @@ const teamIdReducer = (state = 2, action) => {
   switch (action.type) {
     case 'NEXT':
       return state + 1;
+    case 'PREV':
+      return state - 1;
     default:
       return state;
   }

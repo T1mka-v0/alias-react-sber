@@ -2,7 +2,7 @@ import React from 'react';
 import './modal.css'
 import { Button } from '@salutejs/plasma-ui';
 
-const Modal = ({ isOpen, onClose, children }) => {
+const Modal = ({ isOpen, onClose, buttonText, children }) => {
   if (!isOpen) {
     return null;
   }
@@ -11,7 +11,7 @@ const Modal = ({ isOpen, onClose, children }) => {
     <div className='modal' onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         {children}
-        <div className='button-wrap'><Button onClick={onClose}>Ок</Button></div>
+        <div className='button-wrap'><Button onClick={onClose}>{buttonText || 'ОК'}</Button></div>
       </div>
     </div>
   );

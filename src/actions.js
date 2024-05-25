@@ -5,8 +5,8 @@ export const addTeam = (id, name) => {
             team: {
                 id: id,
                 name: name,
-                score: 0,
-                guessedWords: []
+                guessedWords: [],
+                skippedWords: []
             }
         }
     }

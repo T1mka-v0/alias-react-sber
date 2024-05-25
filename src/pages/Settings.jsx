@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { teamStore, teamId, settingsStore } from '../store';
 import { addTeam, removeTeam, renameTeam,
@@ -8,7 +8,7 @@ import { addTeam, removeTeam, renameTeam,
   setWordsCountToWin
  } from '../actions';
 
-import { Button, Cell, Slider, Switch, TextBox, TextField } from '@salutejs/plasma-ui';
+import { Button, Cell, Slider, Switch, TextBox, TextField, Checkbox } from '@salutejs/plasma-ui';
 import { Theme, DocStyles } from '../SberStyles';
 import { Container, CellDisclosure } from '@salutejs/plasma-ui';
 
@@ -16,6 +16,7 @@ import { Container, CellDisclosure } from '@salutejs/plasma-ui';
 import { BodyL, bodyL, bodyM, bodyLBold } from '@salutejs/plasma-ui';
 import { IconAddFill, IconAnimalFill, IconChatFill, IconCross, IconNextOutline, IconNoteFill, IconNotebookFill, IconNotebookWavesOutline, IconPinDashOutline, IconText, IconTrashFill, IconTrashFilled, IconViewBeautyOutline } from '@salutejs/plasma-icons';
 import Modal from '../components/Modal';
+import { useSelector } from 'react-redux';
 
 function Settings() {
 
@@ -32,6 +33,17 @@ function Settings() {
   const [currentTeamName, setCurrentTeamName] = useState('');
 
   const navigate = useNavigate();
+
+  const teamStoreSubscribe = useSelector(state => state);
+  useEffect(() => {
+    console.log('!!!!!!!!!!!!!!!!!!!', teamStoreSubscribe);
+    setTeams([...teams, {
+      id: teamStoreSubscribe[teamStore.getState().length-1].id,
+      name: teamStoreSubscribe[teamStore.getState().length-1].name,
+      guessedWords: [],
+      skippedWords: []
+    }]);
+  },[teamStoreSubscribe])
 
   const handleAddTeam = () => {
     // Отправляю в redux новую команду с название из инпута
@@ -94,7 +106,7 @@ function Settings() {
   }
 
   return (
-    <div>
+    <div style={{height:"2000px"}}>
       <DocStyles />
       <Theme />
       {/* Модальное окно для изменения названия команды */}
@@ -220,6 +232,23 @@ function Settings() {
           />
         </div>
       </Container>
+
+      {/* Test */}
+      <Container>
+        <div style={{display:"flex", justifyContent:"space-between"}}>
+          <h2>Общее последнее слово</h2>
+          <Checkbox
+            value={commonLW}
+            onChange={() => {
+              setCommonLW(!commonLW);
+              settingsStore.dispatch(setCommonLastWord(!commonLW));
+            }}
+          />
+        </div>
+      </Container>
+
+      <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
+      <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button>
       
       <Link to={'/game'}>
         <Container>
