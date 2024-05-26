@@ -3,13 +3,13 @@ import { legacy_createStore as createStore } from "redux";
 
 const initialTeams = [
   {
-    id: 0,
+    id: 1,
     name: 'Red Hot Chilly Peppers',
     guessedWords: [],
     skippedWords: []
   },
   {
-    id: 1,
+    id: 2,
     name: 'Green Picky Cucumbers',
     guessedWords: [],
     skippedWords: []
@@ -47,6 +47,12 @@ const teamChangeReducer = (state = initialTeams, action) => {
       updatedTeam.guessedWords?.push(...action.payload.team.guessedWords);
       updatedTeam.skippedWords?.push(...action.payload.team.skippedWords)
       return state.map(team => team.id === action.payload.team.id ? updatedTeam : team);
+    case 'SET_NEW_ID':
+      let i = 0;
+      return state.map((team, index) => {
+        i++;
+        return Object.assign({}, team, {id: i})
+      })
     default:
       return state;
   }

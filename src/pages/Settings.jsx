@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { teamStore, teamId, settingsStore } from '../store';
-import { addTeam, removeTeam, renameTeam,
+import { 
+  addTeam,
+  removeTeam,
+  renameTeam,
+  setNewId,
   setCommonLastWord,
   setPenaltyForSkip,
   setRoundDuration,
@@ -35,27 +39,16 @@ function Settings() {
   const navigate = useNavigate();
 
   const teamStoreSubscribe = useSelector(state => state);
+
   useEffect(() => {
-    console.log('!!!!!!!!!!!!!!!!!!!', teamStoreSubscribe);
-    setTeams([...teams, {
-      id: teamStoreSubscribe[teamStore.getState().length-1].id,
-      name: teamStoreSubscribe[teamStore.getState().length-1].name,
-      guessedWords: [],
-      skippedWords: []
-    }]);
+    console.log('Запрос на ререндер при обновлении командного стора', teamStoreSubscribe);
+    setTeams(teamStore.getState());
+    console.log('teamStoreSubscribe: ', teamStoreSubscribe);
   },[teamStoreSubscribe])
 
   const handleAddTeam = () => {
     // Отправляю в redux новую команду с название из инпута
     teamStore.dispatch(addTeam(teamId.getState(), currentTeamName));
-
-    // Добавляю новую команду локально
-    setTeams([...teams, {
-      id: teamId.getState(),
-      name: currentTeamName,
-      score: 0,
-      words: []
-    }]);
 
     // увеличиваю id для следующей команды
     teamId.dispatch({type: 'NEXT'});
@@ -66,12 +59,11 @@ function Settings() {
     // Отладка
     console.log('teamStore state: ', teamStore.getState());
     console.log('Next id: ', teamId.getState());
-    console.log('currentTeamName: ', currentTeamName);
   }
 
   const deleteTeamById = (id) => {
-    setTeams(teams.filter(team => team.id !== id));
     teamStore.dispatch(removeTeam(id));
+    teamStore.dispatch(setNewId());
   }
 
   // Модальное окно для смены имени команды
@@ -89,7 +81,7 @@ function Settings() {
       setModalRename({...modalRename, opened: false});
     }
     else {
-      localRenameTeam(modalRename.teamId, newTeamName);
+      // localRenameTeam(modalRename.teamId, newTeamName);
       teamStore.dispatch(renameTeam(modalRename.teamId, newTeamName));
       setModalRename({...modalRename, opened: false});
       setNewTeamName('');

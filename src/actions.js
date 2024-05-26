@@ -13,6 +13,7 @@ export const addTeam = (id, name) => {
 }
 
 export const removeTeam = (id) => {
+    console.log('Вызвана команда диспатч REMOVE_TEAM с id ', id);
     return {
         type: 'REMOVE_TEAM',
         payload: {
@@ -46,6 +47,13 @@ export const updateScore = (id, newGuessedWords, newSkippedWords) => {
                 skippedWords: newSkippedWords
             }
         }
+    }
+}
+
+// Установить новые id при удалении команды
+export const setNewId = () => {
+    return {
+        type: 'SET_NEW_ID'
     }
 }
 
