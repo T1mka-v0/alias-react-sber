@@ -15,7 +15,7 @@ import {
  } from './actions';
 
 import App from './App';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom';
 import ErrorPage from './pages/error-page';
 import Settings from './pages/Settings';
 import Rules from './pages/Rules';
@@ -27,10 +27,12 @@ import { createGlobalStyle } from 'styled-components';
 import Result from './pages/Result';
 
 import { createSmartappDebugger, createAssistant } from '@salutejs/client';
+import SwitchTest from './pages/SwitchTest';
 
 const devType = "development";
-const artem_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJjZTgwOTAwNi0xYjA0LTQ5OGYtYjFhNi1mMGZkOGJlMTdkOGUiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxNjgwMzcwMSwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE2NzE3MjkxLCJzaWQiOiJkNDUzZTRiNy03Yzc0LTQ3MDctYTlmZC0xYjM2YzMzNGUwNDQifQ.R4TurEXHPNnSZHOHiRZPpItlYY918zlfHvmIksXU2Y5xz4MZIsGqvX73ZBvNCSxH-CvdaiRkTuURhBBEbyhjFT-8cT2I5trGtDFM3uMukdGEhTq0EcsI3TBjB4_95rPJbviSdjRxvHdm639bd5VeqlI0M-XZnE3RyFBxL2PdSTltt6toQEIjRixdTgQ5B0MGBXR79GgwtFnEzngytz2FrW3gSGiLUoco9M5uWuVhmgqFY-bDasURfhcY4ZLCTRxEpMU0Ws8tVE3_ZL8v1-TokzHs2eCyfOGi5_YclubqZZYACyjVTpOr9n2oTbvfNOhEKEvqKLvTTI_5IAe1fnPxJFAfv-13bMmOvqIbndQuNUrTXdXnc6adHMhSI-8AVOOlAY_4vsvj5kLFnrfdyb_JO-i6tScctt55bk2BToLQpXZVqXZEC9TtosfO8PHaqiXUxmICjDUjM9O04_0Na9O-Zevey7u-W5YuZ_iERUKyiOGoLG_boObVHBmE7-RwkY1PQ3-YaZoB6OfAdpOIsq6PDZJdka2Don1kShnGdrdF63baP7y9NRE3TcEtkJh2bor8-v-iKHGAW3Q86nMyVt7TiDPnGmHSWbtBuoqXR61SfnuDR0-i89erHrbgLh2xiJgLvpoB8zwMDVZ4L-a3fnaYFJEELR8bEEocyeIF_g_sxsw";
+const artem_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI4MDhlMjJhNS05OGMyLTQzMjEtYTQ4MC01NjJmMDkzOTdkNWIiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxNzY5NzE1OCwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE3NjEwNzQ4LCJzaWQiOiJkMDI4MTVkZS03MGYxLTRhOTctYTUwOS05NGI4MzgxM2M5NWEifQ.i3W3oqJ7NZ947kJYdPu_CIIxShoAPjMorSD2C6KhOIsTJPkhQ-xfTIcxJp9DChiLZRkMr_MoGXO4qOmNq5lql3ufWAWhYTsCi9iIWKoxvvXyBCUdflLyBHk5YNO10TDPdcYj9FFcbjft6Y2L1fVCz-qxkh-iKBgL4RCibHhtD7R_QReOUQDmeYQsEPBQRnci11P4GFcdkrjNdn-YNiIYRrhWJ2QdCXJpTNFBI-rVj416V1AOhL3bjNBk_d13YRdHktqKy7UVx5e0eNc_QNNAwIEXjHjX5pvgY5PeaqPPkosSfjFrZr4rdrNdgz7SZeFBBHIeqpgc6weUDgXtdA588NqCVDWD0PdEIjnwKBPOuAUCIAKfZwneHdNGIc_QECMm-INhhUdHypL6lKFoKmAYTKY5-4Kswwi0NDTR4c50S9FAGE0yZ3vBu50yxW84iB_qLIR4-HfXKqzr0-ZUCN26wbH2lzObc5yq-Brjv0McmUiTv7rC61vFrP8e3LQoWc5m55TX0PD5X7jyvnuN4cIIJipEPiy4pI33E2azNNvKwHLKFgxNI6VZzaCuokfKiNbOgt_ubJWmiwnO7R2M52dt1QseU3UFfAY9Vl3eDrb8D2YsITgBXmbdXqzC0TZ9WADVID3b1BWRFKY6SxMZNPhGkawTQ8ofAzBrUIvahVEGwjw';
 const alykoshin_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJiZWFkMzU2Ny03ZjY2LTRkZTQtYmY2YS0yNDFkZjk2MzJhMTQiLCJzdWIiOiIwMDFhMGI5Yzc2Yjg5ZTE0YzI0MjhkYjNiMGI2MjBjMDMwYTVmMmQzMWFkNWExMjZjZTlhMGJhZDFhOTExY2E2NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxNjExMjgxOSwiYXVkIjoiVlBTIiwidXNyIjoiM2YwOTUxNTgtODM3NS05YmVmLWI4MTktNDczZmExYTE4YTAzIiwiaWF0IjoxNzE2MDI2NDA5LCJzaWQiOiI5NTYwNTgzNC01NjA3LTQ5NzgtOTUxNC1iYmJhYmI1OWEwN2MifQ.NWElFSQynkPy5Us12ONnk7mi4Fp_G5iIv-4H3Yc3AyjupdT2nhaihxnVFvn1mlKCUqoCd-elbnr1adRFgagwRlAgQYYQbte2ntWE4o1NyJGQavxYSp9zHroq-2qK6AEIC8BQPaovMx5-WNfCP6pugYUYaMizoFews5bPNjL8y5865puCCIzu_UBh-lHyJwSu8E5-60ZaPtyLAFyNhoWaKH7639itALrHhziv-3Q3YAopzY-IBCkDCH3gx6WlC11j9Jq4XL8-Bb05hsueAYE3lYqDct_dTCMmeYM0QrMt7atkrdADYGctNhNPwBwVySC490F1xd7MUcqjZnTVnL7_8_cQuEclC0K2Imu6VenM0V2ogWNyTER_goFjXVOS6u-fnsApebZRqIgBtAl_uC9P6xqkHmnIB7CNONmko3n59_sVCYdqRsFr6g45iN4IUKwqW_Oy9a0Zklee4H4CMUp5hncqhdSiigVn8-5rl5e7DYvtvWy_34lkvAN3zmbHxXH2HM__pWTynwRZSfuYty8CeNxsfdvskuKqsMyY7cfIdaq5Z04frXLGDqdBhJXQHYx6QNB1BIyA5mFqlgp43OPU9cSO5OjTorfWXhgnMyZRq-q3AggWnw8tYpbQlXjsG-TdOk0_pldETjqx1Qd81tj43OtRm4XNblff3st6QWRkB0o"
+
 
 const initialize = (getState) => {
     if (devType === "development") {
@@ -93,7 +95,10 @@ function dispatchAssistantAction(command) {
         break;
       case 'rename_team':
         console.log(`Принята команда на переименование команды с id ${command.action.payload.id} и названием ${command.action.payload.name}`);
-
+        teamStore.dispatch(renameTeam(parseInt(command.action.payload.id, 10), command.action.payload.name));
+      case 'go_to_settings':
+        console.log('Получена команда перейти на страницу настроек');
+        // navigate('settings')
     }
   }
   
@@ -108,6 +113,24 @@ assistant.on('start', (event) => {
 assistant.on('command', (command) => {
   console.log('Command: ', command);
 })
+
+function send_action_value(action_id, value) {
+  const data = {
+    action: {
+      action_id: action_id,
+      parameters: {
+        // значение поля parameters может быть любым, но должно соответствовать серверной логике
+        value: value, // см.файл src/sc/noteDone.sc смартаппа в Studio Code
+      },
+    },
+  };
+  const unsubscribe = assistant.sendData(data, (data) => {
+    // функция, вызываемая, если на sendData() был отправлен ответ
+    const { type, payload } = data;
+    console.log('sendData onData:', type, payload);
+    unsubscribe();
+  });
+}
 
 // function dispatchAssistantAction(command) {
 //   switch (action.type) {
@@ -137,20 +160,24 @@ const router = createBrowserRouter([
   {
     path: 'result',
     element: <Result />
+  },
+  { // Test
+    path: 'switch',
+    element: <SwitchTest />
   }
 ])
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <DeviceThemeProvider responsiveTypo>
-  <GlobalStyle />
-  <Provider store={teamStore}>
-    <RouterProvider router={router}>
-      
+    <GlobalStyle />
+    <Provider store={teamStore}>
+      <RouterProvider router={router}>
         
-      
-      
-    </RouterProvider>
+          
+        
+        
+      </RouterProvider>
     </Provider>
   </DeviceThemeProvider>
 );
