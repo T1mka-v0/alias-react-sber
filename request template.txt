@@ -1,4 +1,4 @@
-Хранилище teamStore:
+Хранилище store:
 
 <array>[
         {

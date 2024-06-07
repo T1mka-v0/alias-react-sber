@@ -1,96 +1,102 @@
-import { act } from "react";
 import { legacy_createStore as createStore } from "redux";
 
-const initialTeams = [
-  {
-    id: 1,
-    name: 'Red Hot Chilly Peppers',
-    guessedWords: [],
-    skippedWords: []
+const initialState = {
+  teamsArray: [
+    {
+      id: 1,
+      name: 'Red Hot Chilly Peppers',
+      guessedWords: [],
+      skippedWords: []
+    },
+    {
+      id: 2,
+      name: 'Green Picky Cucumbers',
+      guessedWords: [],
+      skippedWords: []
+    }
+  ],
+  settings: {
+    roundDuration: 60,
+    wordsCountToWin: 30,
+    commonLastWord: false,
+    penaltyForSkip: false
   },
-  {
-    id: 2,
-    name: 'Green Picky Cucumbers',
-    guessedWords: [],
-    skippedWords: []
-  }
-]
+  teamId: 3
+}
 
-// const action = {
-//   type: 'ADD_TEAM',
-//   team: {
-//     id: null,
-//     name: '',
-//     score: 0,
-//     words: []
-//   }
-// }
-
-const teamChangeReducer = (state = initialTeams, action) => {
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     case 'ADD_TEAM':
-      return [...state, action.payload.team];
+      // return [...state, action.payload.team];
+      return Object.assign({}, state, {teamsArray: [...state.teamsArray, action.payload.team]});
+      
+
     case 'REMOVE_TEAM':
-      return state.filter(team => team.id !== action.payload.team.id);
+      return Object.assign({}, state, {
+        teamsArray: state.teamsArray.filter(team => team.id!== action.payload.team.id)
+      });
     // Need to transfer team with same data but new name
     case 'RENAME_TEAM':
-      const newState = state.map((t) => {
-        if (t.id === action.payload.team.id) {
-          return Object.assign({}, t, {name: action.payload.team.name})
-        } else {
-          return t;
-        }
-      });
-      return newState;
+      // const newState = state.map((t) => {
+      //   if (t.id === action.payload.team.id) {
+      //     return Object.assign({}, t, {name: action.payload.team.name})
+      //   } else {
+      //     return t;
+      //   }
+      // });
+
+      return Object.assign({}, state, {
+        teamsArray: state.teamsArray.map(t => {
+          return t.id === action.payload.team.id ? Object.assign({}, t, {name: action.payload.team.name}) : t;
+        })
+      })
     case 'UPDATE_SCORE':
-      let updatedTeam = state.find(team => team.id === action.payload.team.id);
+      let updatedTeam = state.teamsArray.find(team => team.id === action.payload.team.id);
       updatedTeam.guessedWords?.push(...action.payload.team.guessedWords);
       updatedTeam.skippedWords?.push(...action.payload.team.skippedWords)
-      return state.map(team => team.id === action.payload.team.id ? updatedTeam : team);
+      return Object.assign({}, state, {
+        teamsArray: state.teamsArray.map(team => team.id === action.payload.team.id ? updatedTeam : team)
+      })
     case 'SET_NEW_ID':
       let i = 0;
-      return state.map((team, index) => {
-        i++;
-        return Object.assign({}, team, {id: i})
+      return Object.assign({}, state, {
+        teamsArray: state.teamsArray.map((team, index) => {
+          i++;
+          return Object.assign({}, team, {id: i})
+        })
       })
-    default:
-      return state;
-  }
-}
-
-export const teamStore = createStore(teamChangeReducer);
-
-const teamIdReducer = (state = 2, action) => {
-  switch (action.type) {
+    
     case 'NEXT':
-      return state + 1;
+      return Object.assign({}, state, {
+        teamId: state.teamId + 1
+      })
     case 'PREV':
-      return state - 1;
-    default:
-      return state;
-  }
-}
-// Содержит id последней добавленной команды
-export const teamId = createStore(teamIdReducer);
-
-const settingsInitialState = {
-  roundDuration: 60,
-  wordsCountToWin: 30,
-  commonLastWord: false,
-  penaltyForSkip: false
-}
-export const settingsReducer = (state = settingsInitialState, action) => {
-  switch (action.type) {
+      return Object.assign({}, state, {
+        teamId: state.teamId - 1
+      })
+    
     case 'SET_ROUND_DURATION':
-      return Object.assign({}, state, {roundDuration: action.payload.roundDuration});
+      return Object.assign({}, state, {
+        settings: Object.assign({}, state.settings, {roundDuration: action.payload.roundDuration})
+      });
     case 'SET_WORDS_TO_WIN':
-      return Object.assign({}, state, {wordsCountToWin: action.payload.wordsCountToWin});
+      return Object.assign({}, state, {
+        settings: Object.assign({}, state.settings, {wordsCountToWin: action.payload.wordsCountToWin})
+      });
     case 'SET_COMMON_LAST_WORD':
-      return Object.assign({}, state, {commonLastWord: action.payload.commonLastWord});
+      return Object.assign({}, state, {
+        settings: Object.assign({}, state.settings, {commonLastWord: action.payload.commonLastWord})
+      });
     case 'SET_PENALTY_FOR_SKIP':
-      return Object.assign({}, state, {penaltyForSkip: action.payload.penaltyForSkip});
+      return Object.assign({}, state, {
+        settings: Object.assign({}, state.settings, {penaltyForSkip: action.payload.penaltyForSkip})
+      });
+    
     default:
       return state;
   }
 }
-export const settingsStore = createStore(settingsReducer);
+
+export const store = createStore(reducer);
+
+// wordsCountToWin  commonLastWord   penaltyForSkip

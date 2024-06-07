@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { teamStore, teamId, settingsStore } from '../store';
+import { store } from '../store';
 
 import { Button, Button1, Cell, Slider, Switch, TextBox, TextField, h3 } from '@salutejs/plasma-ui';
 import { Theme, DocStyles } from '../SberStyles';
@@ -11,9 +11,9 @@ import CellForScore from '../components/cellForScore/CellForScore';
 
 function Result() {
     const navigate = useNavigate();
-    const teams = teamStore.getState();
-    const settings = settingsStore.getState();
-    console.log(teamStore.getState());
+    const teams = store.getState().teamsArray;
+    const settings = store.getState().settings;
+    console.log(store.getState());
     // let i = 0;
     // team_name, settings, Gnumber, Snumber
     useEffect(() => {

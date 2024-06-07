@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { teamStore, teamId, settingsStore } from '../store';
+import { store } from '../store';
 import { updateScore } from '../actions';
 import { DocStyles, Theme } from '../SberStyles';
 import { Link } from 'react-router-dom';
@@ -24,10 +24,10 @@ import wordsList from '../db/wordsList';
 
 function Game() {
   // Получаем список команд из redux хранилища
-  const teams = teamStore.getState();
+  const teams = store.getState().teamsArray;
 
   // Объект настроек получаем из хранилища
-  const settings = settingsStore.getState();
+  const settings = store.getState().settings;
 
   // Загрузчик
   const [isLoaded, setIsLoaded] = useState(true);
@@ -63,10 +63,10 @@ function Game() {
   // }
 
   // Получение количества команд из reducer
-  const numberOfTeams = teamStore.getState().length;
+  const numberOfTeams = store.getState().teamsArray.length;
   
   // Циклично передает ход другой команде по кругу
-  function   nextTurn() {
+  function nextTurn() {
     setTurn((turn+1) % numberOfTeams);
     console.log('Отработал next turn!');
   }
@@ -86,7 +86,7 @@ function Game() {
     // console.log(teams);
     // console.log(currentTeam)
     console.log('Локальные настройки: ', settings);
-    console.log('Настройки в сторе: ', settingsStore.getState());
+    console.log('Настройки в сторе: ', store.getState().settings);
     setWords(wordsList);
   }, []);
 
@@ -100,8 +100,8 @@ function Game() {
     setCurrentSkippedWords([]);
     setCurrentGuessedWords([]);
     console.log(`Локальное состояние команды ${newTeam.name}: `, newTeam);
-    teamStore.dispatch(updateScore(newTeam.id, newTeam.guessedWords, newTeam.skippedWords));
-    console.log('teamStore state: ', teamStore.getState())
+    store.dispatch(updateScore(newTeam.id, newTeam.guessedWords, newTeam.skippedWords));
+    console.log('store state: ', store.getState())
     setCurrentTeam(teams[turn]);
   }, [turn])
 
@@ -119,7 +119,7 @@ function Game() {
   // Таймер
   // !--------------------------------------------------------------------------------------------------!
 
-  const requestedDuration = settingsStore.getState().roundDuration;
+  const requestedDuration = store.getState().settings.roundDuration;
 
   // отладочные 3 секунды
   const [timer, setTimer] = useState(requestedDuration);

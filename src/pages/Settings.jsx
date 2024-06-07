@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { teamStore, teamId, settingsStore } from '../store';
+import { store } from '../store';
 import { 
   addTeam,
   removeTeam,
@@ -25,45 +25,45 @@ import { useSelector } from 'react-redux';
 function Settings() {
 
   // Настройки игры
-  const [duration, setDuration] = useState(settingsStore.getState().roundDuration);
-  const  [wordsCount, setWordsCount] = useState(settingsStore.getState().wordsCountToWin);
-  const [commonLW, setCommonLW] = useState(settingsStore.getState().commonLastWord);
-  const [penalty, setPenalty] = useState(settingsStore.getState().penaltyForSkip);
+  const [duration, setDuration] = useState(store.getState().settings.roundDuration);
+  const  [wordsCount, setWordsCount] = useState(store.getState().settings.wordsCountToWin);
+  const [commonLW, setCommonLW] = useState(store.getState().settings.commonLastWord);
+  const [penalty, setPenalty] = useState(store.getState().settings.penaltyForSkip);
 
   // Локальное состояние - массив команд для отображения на странице
-  const [teams, setTeams] = useState(teamStore.getState());
+  const [teams, setTeams] = useState(store.getState().teamsArray);
 
   // Состояние которое отражает текущее значение поля ввода
   const [currentTeamName, setCurrentTeamName] = useState('');
 
   const navigate = useNavigate();
 
-  const teamStoreSubscribe = useSelector(state => state);
+  const storeSubscribe = useSelector(state => state);
 
   useEffect(() => {
-    console.log('Запрос на ререндер при обновлении командного стора', teamStoreSubscribe);
-    setTeams(teamStore.getState());
-    console.log('teamStoreSubscribe: ', teamStoreSubscribe);
-  },[teamStoreSubscribe])
+    console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
+    setTeams(store.getState().teamsArray);
+    console.log('storeSubscribe: ', storeSubscribe);
+  },[storeSubscribe])
 
   const handleAddTeam = () => {
     // Отправляю в redux новую команду с название из инпута
-    teamStore.dispatch(addTeam(teamId.getState(), currentTeamName));
+    store.dispatch(addTeam(store.getState().teamId, currentTeamName));
 
     // увеличиваю id для следующей команды
-    teamId.dispatch({type: 'NEXT'});
+    store.dispatch({type: 'NEXT'});
 
     // Очищаем поле ввода
     setCurrentTeamName('');
 
     // Отладка
-    console.log('teamStore state: ', teamStore.getState());
-    console.log('Next id: ', teamId.getState());
+    console.log('teams state: ', store.getState().teamsArray);
+    console.log('Next id: ', store.getState().teamId);
   }
 
   const deleteTeamById = (id) => {
-    teamStore.dispatch(removeTeam(id));
-    teamStore.dispatch(setNewId());
+    store.dispatch(removeTeam(id));
+    store.dispatch(setNewId());
   }
 
   // Модальное окно для смены имени команды
@@ -81,8 +81,8 @@ function Settings() {
       setModalRename({...modalRename, opened: false});
     }
     else {
-      // localRenameTeam(modalRename.teamId, newTeamName);
-      teamStore.dispatch(renameTeam(modalRename.teamId, newTeamName));
+      // localRenameTeam(modalRename.store, newTeamName);
+      store.dispatch(renameTeam(modalRename.teamId, newTeamName));
       setModalRename({...modalRename, opened: false});
       setNewTeamName('');
     }
@@ -170,10 +170,10 @@ function Settings() {
         <Slider
           onChange={(value) => {
             setDuration(value);
-            settingsStore.dispatch(setRoundDuration(value));
+            store.dispatch(setRoundDuration(value));
           }}
           onChangeCommitted={(value) => {
-            settingsStore.dispatch(setRoundDuration(value));
+            store.dispatch(setRoundDuration(value));
           }}
           min={30}
           max={120}
@@ -186,10 +186,10 @@ function Settings() {
         <Slider
           onChange={(value) => {
             setWordsCount(value);
-            settingsStore.dispatch(setWordsCountToWin(value));
+            store.dispatch(setWordsCountToWin(value));
           }}
           onChangeCommitted={(value) => {
-            settingsStore.dispatch(setWordsCountToWin(value));
+            store.dispatch(setWordsCountToWin(value));
           }}
           min={10}
           max={60}
@@ -206,7 +206,7 @@ function Settings() {
             value={commonLW}
             onChange={() => {
               setCommonLW(!commonLW);
-              settingsStore.dispatch(setCommonLastWord(!commonLW));
+              store.dispatch(setCommonLastWord(!commonLW));
             }}
           />
         </div>
@@ -219,7 +219,7 @@ function Settings() {
             value={penalty}
             onChange={() => {
               setPenalty(!penalty);
-              settingsStore.dispatch(setPenaltyForSkip(!penalty));
+              store.dispatch(setPenaltyForSkip(!penalty));
             }}
           />
         </div>
@@ -233,7 +233,7 @@ function Settings() {
             value={commonLW}
             onChange={() => {
               setCommonLW(!commonLW);
-              settingsStore.dispatch(setCommonLastWord(!commonLW));
+              store.dispatch(setCommonLastWord(!commonLW));
             }}
           />
         </div>

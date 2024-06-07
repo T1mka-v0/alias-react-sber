@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
-import { teamStore, teamId } from './store';
+import { store } from './store';
 
 import { Theme, DocStyles } from './SberStyles';
 
