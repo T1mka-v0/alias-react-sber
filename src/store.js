@@ -64,7 +64,8 @@ const reducer = (state = initialState, action) => {
           i++;
           return Object.assign({}, team, {id: i})
         })
-      })
+      },
+    {teamId: i+1})
     
     case 'NEXT':
       return Object.assign({}, state, {

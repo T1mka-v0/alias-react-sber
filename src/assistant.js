@@ -17,12 +17,12 @@ import {
 
 import router from './router';
 
-const devType = 'development';
+const dev = true;
 const artem_token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI1ZDA5YzRlNi1mNjE1LTQzZWYtOWZlMi1lNGM5NmY3ZmYzOTkiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxNzgzOTI3NiwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE3NzUyODY2LCJzaWQiOiIzMzQ3MDMxNS1mM2ZmLTRmMTEtYTFiYS05OWRhMjFkMTA0ODAifQ.uF9UK-wCRyAqTdh9o8UnFHLEq4JVDw0onUnPC2T47gN4pi49D9clN53PbWn7X3H5DoxReuJcMqEpRbSu-mLoE_R2nSWEaL4MdDLp_-mfqfJeJaUNHmOVwgSsHk47k-tUbJ6qCVaBzyKFxAr-q7tnPA28AcezTSvh5I-DFIDbRc3QStwFSEIx5tM9chjI4z7qOg69xQs_IDehR9Vh5ixnMKuWO460PFomcHJICqSz9aalgBp2FoGJFgcX_Npng-FVcAblkgYtwxtfIFqomXFKIN1V_78a3HLB_B2D-pSuIgwyDZDmb8knVI3UYi9ASiAYm4QFwz_oUOp2sLSwkUyV04SwS104cI5cnUeRCUtCfs2F7d-F1y1Qh5DgmLd0DvrMg5FZI5Me3kw8yfmf1I8rlWvXheGwBrIz2yqfdM3gfYYEBVmepl6W3Jkd7k9BK_GaPUdEWixoZf-CdxNm_rP1iOaE74P-5lHdzV3c0Y8SbaVZ-m_zp2hcXqRcutyJxzakXtj2GWhdDOz5t4p-MDPvYtyiREH-n1Q5I2zcfMz_8ADt46Pm_muuoNWhc8K46iFG1YtKvaoSnnQ7GNZect94JHtVY39P_nLPLi9xq1u8EE4QDkVHAebXSauO0G1u5Mu0KG1_upMsUFlVC9NhX8lEMir_KWO3ATy1_jgRys5b-gQ';
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJhYTdmNzJiMS1mZDcyLTQ1M2QtYjQ3Yi1jZjE0ZmQxMDc5NzQiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxODE3OTIwNCwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE4MDkyNzk0LCJzaWQiOiI0NjY0Mzc2YS03MmMzLTRmNmUtYTI3MS1mY2E2NTdmYzUxZTIifQ.cPKeLCD9cv3uZi6HD7ZoK8ci16BC0sNA2ecFDi5fqu-kYR-YLxnpCPrWGeCiuh6b9PfhwS0dsz8yxn1D6zorKQ40_yf7VqJAwts52i84BEd7ye51I987w8T8DSV3qmUGj95lenV9PAaf8nNX1TYjbVasqGMe8cb_vd59-U2lM3jAJFC3rkWkF4Iv1kqDoPPUelv53g9m671n0K5AZnnC4h4mOx0a3Viitk4Qk67G5HLXaT2jXpbuby-A-0bK5o8bNWv4op8f8bmoWmMC4nH7ffAsRedGRK5N_sBnxu8rgv08EqzrVcz00tw5lBJCnj9c30DiSIQv4j8L3lOyH-AmxhyKlku5FGbTTF1MWTFKs1QlxR8p-w7OwRLFewu6QW2o_8hila7LcHiMxoTJyne7eALSrM0orgJMMfzh9diu0Rtfq7T1vVbJiKf8PgC4TcShsLIgE9mVT8kjFvhH7NFlMIU90PvOlmhDSh27zz6SpN46lzGNrEG-cM-Ky4MAIIso2TpHJHcT5GgVxjU6yEPyr0F00kD99LikWyTPnS04uyv5RTMmZ6spx_WgLbVqMPy96IGJDbhQrqhrGcaCiqWWHIvrozPohjzolj3dU3R1WH5wTfoJ0GyPPPQY5ibQHJSmmxbjiUdduB_yMj_zZV7SC02YsSevgOsv8T5hvHhjHf4';
 
 const initialize = (getState) => {
-  if (devType === 'development') {
+  if (dev) {
     return createSmartappDebugger({
       // Токен из Кабинета разработчика
       token: artem_token,
@@ -114,9 +114,21 @@ function dispatchAssistantAction(command) {
 
       // Переходы на страницы
       case 'go_to_settings':
+        console.log('Pathname: ', router.state.location.pathname);
         console.log('Получена команда перейти на страницу настроек');
-        router.navigate('settings');
+        console.log('Состояние роутера:', router.state);
+        router.navigate('/settings');
         break;
+      
+      case 'go_to_game':
+        console.log('Получена команда перехода на страницу игры');
+        router.navigate('/game');
+        break;
+
+      case 'back':
+        window.history.back();
+        break;
+      // case 'back':
 
       // настройки
       case 'set_duration':
@@ -126,7 +138,8 @@ function dispatchAssistantAction(command) {
         );
         break;
 
-      case 'setNumerOfWords':
+      case 'set_number_of_words':
+        store.dispatch(setWordsCountToWin(parseInt(command.action.payload.value, 10)));
         console.log(
           'Запрос на установку количества слов: ',
           command.action.payload.value
@@ -134,15 +147,19 @@ function dispatchAssistantAction(command) {
         break;
 
       case 'turn_on_penalty':
+        store.dispatch(setPenaltyForSkip(true));
         console.log('Штраф за последнее слово включен!');
         break;
       case 'turn_off_penalty':
+        store.dispatch(setPenaltyForSkip(false));
         console.log('Штраф за последнее слово выключен!');
         break;
       case 'turn_on_clw':
+        store.dispatch(setCommonLastWord(true));
         console.log('Штраф за последнее слово включен!');
         break;
       case 'turn_off_clw':
+        store.dispatch(setCommonLastWord(false));
         console.log('Штраф за последнее слово выключен!');
         break;
       default:

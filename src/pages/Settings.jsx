@@ -22,6 +22,8 @@ import { IconAddFill, IconAnimalFill, IconChatFill, IconCross, IconNextOutline, 
 import Modal from '../components/Modal';
 import { useSelector } from 'react-redux';
 
+import router from '../router';
+
 function Settings() {
 
   // Настройки игры
@@ -43,7 +45,10 @@ function Settings() {
   useEffect(() => {
     console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
     setTeams(store.getState().teamsArray);
-    console.log('storeSubscribe: ', storeSubscribe);
+    setDuration(store.getState().settings.roundDuration);
+    setWordsCount(store.getState().settings.wordsCountToWin);
+    setCommonLW(store.getState().settings.commonLastWord);
+    setPenalty(store.getState().settings.penaltyForSkip);
   },[storeSubscribe])
 
   const handleAddTeam = () => {
@@ -61,6 +66,7 @@ function Settings() {
     console.log('Next id: ', store.getState().teamId);
   }
 
+  // Удаление команды по id
   const deleteTeamById = (id) => {
     store.dispatch(removeTeam(id));
     store.dispatch(setNewId());
@@ -112,6 +118,10 @@ function Settings() {
         />
       </Modal>
       <h1 style={{display:"flex", justifyContent:"center"}}>Настройки</h1>
+      
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Поле для названия команды */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container style={{marginBottom:"10px"}}>
         <TextField
           placeholder='Название команды'
@@ -121,7 +131,9 @@ function Settings() {
           helperText={currentTeamName === '' ? 'Название команды не может быть пустым' : null}
         />
       </Container>
-
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Кнопка для добавления команды */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
       <Button
         style={{marginBottom:"10px", height:"4rem", letterSpacing:"1px"}}
@@ -132,20 +144,26 @@ function Settings() {
       ></Button>
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Всплывающая подсказка о малом количестве команд */}
+      { /* ------------------------------------------------------------------------------ */ }
       {teams.length <= 1 &&
         <Container>
           <Cell content={<TextBox style={{marginLeft:"10px"}} title='Для игры должно быть больше одной команды' /> }></Cell>
         </Container>
       }
 
-      <Container>
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Список команд */}
+      { /* ------------------------------------------------------------------------------ */ }
+      <Container style={{display:"flex", flexDirection:"column", gap:"0.5rem"}}>
         {teams.map((team) => {
           return (
             <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
               <Cell
                 key={team.id}
                 content={<TextBox style={{marginLeft:"10px"}} title={`${team.name}`} />}
-                contentLeft={<CellDisclosure tabIndex={-1} />}
+                contentLeft={`${team.id}.`}
               >
               </Cell>
               <div style={{display:"flex", alignItems:"center", gap:"0.5rem"}}>
@@ -165,6 +183,9 @@ function Settings() {
         })}
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Продолжительность раунда */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
         <h2>Продолжительность раунда: {duration} сек.</h2>
         <Slider
@@ -181,6 +202,9 @@ function Settings() {
         />
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Количество слов для победы */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
         <h2>Количество слов для победы: {wordsCount}</h2>
         <Slider
@@ -197,15 +221,12 @@ function Settings() {
         />
       </Container>
       
-      {/* Поменять gap между объектами */}
-      
       <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
           <h2>Общее последнее слово</h2>
           <Switch
-            value={commonLW}
+            checked={commonLW}
             onChange={() => {
-              setCommonLW(!commonLW);
               store.dispatch(setCommonLastWord(!commonLW));
             }}
           />
@@ -216,9 +237,8 @@ function Settings() {
         <div style={{display:"flex", justifyContent:"space-between"}}>
           <h2>Штраф за пропуск</h2>
           <Switch
-            value={penalty}
+            checked={penalty}
             onChange={() => {
-              setPenalty(!penalty);
               store.dispatch(setPenaltyForSkip(!penalty));
             }}
           />
@@ -226,7 +246,7 @@ function Settings() {
       </Container>
 
       {/* Test */}
-      <Container>
+      {/* <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
           <h2>Общее последнее слово</h2>
           <Checkbox
@@ -237,10 +257,10 @@ function Settings() {
             }}
           />
         </div>
-      </Container>
+      </Container> */}
 
-      <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
-      <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button>
+      {/* <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
+      <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button> */}
       
       <Link to={'/game'}>
         <Container>
@@ -251,6 +271,14 @@ function Settings() {
           </Button>
         </Container>
       </Link>
+
+      <Button
+        text='Назад'
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+      </Button>
     </div>
   )
 }

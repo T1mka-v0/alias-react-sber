@@ -6,9 +6,7 @@ import ErrorPage from './pages/error-page';
 import Settings from './pages/Settings';
 import Rules from './pages/Rules';
 import Game from './pages/Game';
-import Assist from './Assist';
 import Result from './pages/Result';
-import SwitchTest from './pages/SwitchTest';
 
 const router = createBrowserRouter([
   {
@@ -39,12 +37,7 @@ const router = createBrowserRouter([
       {
         path: 'result',
         element: <Result />,
-      },
-      {
-        // Test
-        path: 'switch',
-        element: <SwitchTest />,
-      },
+      }
     ],
   },
 ]);
