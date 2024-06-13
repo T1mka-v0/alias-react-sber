@@ -25,26 +25,17 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
+  // Действия с командами
   switch (action.type) {
     case 'ADD_TEAM':
       // return [...state, action.payload.team];
       return Object.assign({}, state, {teamsArray: [...state.teamsArray, action.payload.team]});
-      
-
     case 'REMOVE_TEAM':
       return Object.assign({}, state, {
         teamsArray: state.teamsArray.filter(team => team.id!== action.payload.team.id)
       });
     // Need to transfer team with same data but new name
     case 'RENAME_TEAM':
-      // const newState = state.map((t) => {
-      //   if (t.id === action.payload.team.id) {
-      //     return Object.assign({}, t, {name: action.payload.team.name})
-      //   } else {
-      //     return t;
-      //   }
-      // });
-
       return Object.assign({}, state, {
         teamsArray: state.teamsArray.map(t => {
           return t.id === action.payload.team.id ? Object.assign({}, t, {name: action.payload.team.name}) : t;
@@ -67,6 +58,7 @@ const reducer = (state = initialState, action) => {
       },
     {teamId: i+1})
     
+    // Изменения айди id
     case 'NEXT':
       return Object.assign({}, state, {
         teamId: state.teamId + 1
@@ -76,6 +68,7 @@ const reducer = (state = initialState, action) => {
         teamId: state.teamId - 1
       })
     
+    // Настрйоки раунда
     case 'SET_ROUND_DURATION':
       return Object.assign({}, state, {
         settings: Object.assign({}, state.settings, {roundDuration: action.payload.roundDuration})
@@ -93,6 +86,10 @@ const reducer = (state = initialState, action) => {
         settings: Object.assign({}, state.settings, {penaltyForSkip: action.payload.penaltyForSkip})
       });
     
+      // Возврат изначальных настроек
+    case 'RESET':
+      return initialState;
+      
     default:
       return state;
   }

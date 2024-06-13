@@ -22,7 +22,8 @@ import { IconAddFill, IconAnimalFill, IconChatFill, IconCross, IconNextOutline, 
 import Modal from '../components/Modal';
 import { useSelector } from 'react-redux';
 
-import router from '../router';
+import { send_action_value } from '../assistant';
+import assistant from '../assistant';
 
 function Settings() {
 
@@ -104,7 +105,7 @@ function Settings() {
   }
 
   return (
-    <div style={{height:"2000px"}}>
+    <div style={{marginBottom: '200px'}}>
       <DocStyles />
       <Theme />
       {/* Модальное окно для изменения названия команды */}
@@ -262,23 +263,18 @@ function Settings() {
       {/* <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
       <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button> */}
       
-      <Link to={'/game'}>
-        <Container>
-          <Button
-            text='Начать игру'
-            disabled={teams.length <= 1}
-          >
-          </Button>
-        </Container>
-      </Link>
+      <Container>
+        <Button
+          text='Начать игру'
+          disabled={teams.length <= 1}
+          onClick={() => {
+            navigate('/game')
+            // send_action_value('start_game', true);
+          }}
+        >
+        </Button>
+      </Container>
 
-      <Button
-        text='Назад'
-        onClick={() => {
-          window.history.back();
-        }}
-      >
-      </Button>
     </div>
   )
 }

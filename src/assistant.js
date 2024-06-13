@@ -17,9 +17,9 @@ import {
 
 import router from './router';
 
-const dev = true;
+const dev = false;
 const artem_token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJhYTdmNzJiMS1mZDcyLTQ1M2QtYjQ3Yi1jZjE0ZmQxMDc5NzQiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxODE3OTIwNCwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE4MDkyNzk0LCJzaWQiOiI0NjY0Mzc2YS03MmMzLTRmNmUtYTI3MS1mY2E2NTdmYzUxZTIifQ.cPKeLCD9cv3uZi6HD7ZoK8ci16BC0sNA2ecFDi5fqu-kYR-YLxnpCPrWGeCiuh6b9PfhwS0dsz8yxn1D6zorKQ40_yf7VqJAwts52i84BEd7ye51I987w8T8DSV3qmUGj95lenV9PAaf8nNX1TYjbVasqGMe8cb_vd59-U2lM3jAJFC3rkWkF4Iv1kqDoPPUelv53g9m671n0K5AZnnC4h4mOx0a3Viitk4Qk67G5HLXaT2jXpbuby-A-0bK5o8bNWv4op8f8bmoWmMC4nH7ffAsRedGRK5N_sBnxu8rgv08EqzrVcz00tw5lBJCnj9c30DiSIQv4j8L3lOyH-AmxhyKlku5FGbTTF1MWTFKs1QlxR8p-w7OwRLFewu6QW2o_8hila7LcHiMxoTJyne7eALSrM0orgJMMfzh9diu0Rtfq7T1vVbJiKf8PgC4TcShsLIgE9mVT8kjFvhH7NFlMIU90PvOlmhDSh27zz6SpN46lzGNrEG-cM-Ky4MAIIso2TpHJHcT5GgVxjU6yEPyr0F00kD99LikWyTPnS04uyv5RTMmZ6spx_WgLbVqMPy96IGJDbhQrqhrGcaCiqWWHIvrozPohjzolj3dU3R1WH5wTfoJ0GyPPPQY5ibQHJSmmxbjiUdduB_yMj_zZV7SC02YsSevgOsv8T5hvHhjHf4';
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJlMWIwODVmOS1jYTM0LTQ2MzAtOTUxYS1mYjEwYzBmOTE5NTkiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxODI4ODI2OSwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE4MjAxODU5LCJzaWQiOiI0MjhiZjliMi01Y2Q5LTRmNzYtOTk3NS01NDYyMDAyMTQyMGMifQ.ehBmpDskomZw4kT0dNb0eFRYXVrG1g0xSSZJjD2I_6sDfSZeJRcSnPe3gWrX4Wzn_w41b8UHDN4W7YET8s88FT9HuMQf3-QjH99Sp5uSc9MZXGqg8FE2_TewYkQFLjj4WIx3J02r_vUfXuKeIz44mYHFSSwljwYMc4xU5ZSMb4BMQg4PUUKJnPKeC_5lxNVG5E4w6BpAqSXqdn0xckMcnCIbBYlAbZWI2U0YH57g7_ro6uQ8IPcPmKdJBznvDlP8gTe4uZLQlogD78h2CrrjxFh8uxzEk-y0kF64h_Iu0rwLkOd9PD_-_Aes_HfFhN97xPvg-QRSoTg2l6PbwYBz75dps1KQYLMGwcKGWwDaxgO0ps_-I8WbcmiUbtYKwAaoATaBZnOXNPU7pLnV9dYukFQ362hej8KU-apfLjvQTKwwaxUXNPQPgRjKV_sUEfIvOd7HfnKahmrbsWqtqgpbHT4Sac190xi7nvqB43MPRHpQpy93Hdtle8z8KBhr6LAjdAcGtgO1m8RboTfzTLLGPgoCYt1WZsFdy2G2KoEMgBtrz8t8U2Kd2dhJBbvRvFIdwXwio0-5rJZQpiqZPJjH--KUbCZqvHxLBmCLuttMKellZKB64tAYgStEVQyDqy8M21M4qDokm-hOTjiFu_5qNKMEK2VLmHa28_OkxNKZ9eo';
 
 const initialize = (getState) => {
   if (dev) {
@@ -61,6 +61,8 @@ function getStateForAssistant() {
         'убирать',
         'удалять',
         'удалить', //removeTeam.sc
+        'начни',
+        'начать'
       ],
     },
   };
@@ -178,7 +180,7 @@ assistant.on('command', (command) => {
   console.log('Command: ', command);
 });
 
-function send_action_value(action_id, value) {
+export function send_action_value(action_id, value) {
   const data = {
     action: {
       action_id: action_id,

@@ -6,6 +6,7 @@ import { Theme, DocStyles } from './SberStyles';
 
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
 import { Button, Container } from '@salutejs/plasma-ui';
+//import { send_action_value, assistant } from './assistant';
 
 function App() {
 
@@ -19,7 +20,11 @@ function App() {
           <li>
             <Container style={{padding:"16px 64px"}}>
               <Link to={'settings'}>
-                <Button style={{width:"100%"}}>Начать игру</Button>
+                <Button style={{width:"100%"}}
+                  onClick={() => {
+                    //send_action_value('to_settings', 1);
+                  }}
+                >Начать игру</Button>
               </Link>
             </Container>
           </li>

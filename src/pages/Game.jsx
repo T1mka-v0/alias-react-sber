@@ -9,6 +9,8 @@ import CellForScore from '../components/cellForScore/CellForScore';
 import CustomButton from '../components/CustomButton';
 import wordsList from '../db/wordsList';
 
+import router from '../router';
+
 // const defaultTeam = {
 //     id: 0,
 //     name: '',
@@ -23,14 +25,14 @@ import wordsList from '../db/wordsList';
 // }
 
 function Game() {
+  // Флаг для айдишника выигравшей команды
+  let idWinning = null;
+
   // Получаем список команд из redux хранилища
   const teams = store.getState().teamsArray;
 
   // Объект настроек получаем из хранилища
   const settings = store.getState().settings;
-
-  // Загрузчик
-  const [isLoaded, setIsLoaded] = useState(true);
 
   // Стэйты для слов
   let [words, setWords] = useState([]);
@@ -38,7 +40,7 @@ function Game() {
 
   // Стэйты для команд
 
-  // Id команды, у которой сейчас ход. На этот стейт повешен слушатель useEffect, который
+  // Id-1 команды, у которой сейчас ход. На этот стейт повешен слушатель useEffect, который
   // диспатчит новый счёт команды в редьюсер и дает ход следующей команде
   const [turn, setTurn] = useState(0);
   // Текущая команда (по очереди берутся из reducerа)
@@ -49,25 +51,18 @@ function Game() {
   // Текущий локальный список пропушенных слов, нужный для рендера в модальном окне
   // и отправки в reducer, а также для счёта score
   const [currentSkippedWords, setCurrentSkippedWords] = useState([]);
-  
-  // Запрос на сервер для получения json слов
-  // const request = async () => {
-  //   const url = '../words/words.json';
-  //   await fetch(url)
-  //     .then((response) => response.json())
-  //     .then((data) => { 
-  //       console.log('Data received');
-  //       setWords(data);
-  //     })
-  //     .catch(e => console.log(e))
-  // }
+
+  // Определяет была ли начата игра (для того, чтобы отображать фразу продолжить вместо начать)
+  const [isStarted, setIsStarted] = useState(false);
 
   // Получение количества команд из reducer
   const numberOfTeams = store.getState().teamsArray.length;
   
   // Циклично передает ход другой команде по кругу
   function nextTurn() {
+    //checkForWinner();
     setTurn((turn+1) % numberOfTeams);
+    setIsStarted(false);
     console.log('Отработал next turn!');
   }
 
@@ -80,11 +75,6 @@ function Game() {
 
   // Делает запрос на сервер json для получения слов и устанавливает статус "Loaded"
   useEffect (() => {
-    // request();
-    // setIsLoaded(true);
-    // console.log(numberOfTeams);
-    // console.log(teams);
-    // console.log(currentTeam)
     console.log('Локальные настройки: ', settings);
     console.log('Настройки в сторе: ', store.getState().settings);
     setWords(wordsList);
@@ -92,6 +82,8 @@ function Game() {
 
   // 
   useEffect(() => {
+    // 
+    // Можно попробовать с ретерна с функции перестать выполнять дальнейший код
     const newTeam = {
         ...currentTeam,
         guessedWords: currentGuessedWords,
@@ -101,6 +93,7 @@ function Game() {
     setCurrentGuessedWords([]);
     console.log(`Локальное состояние команды ${newTeam.name}: `, newTeam);
     store.dispatch(updateScore(newTeam.id, newTeam.guessedWords, newTeam.skippedWords));
+    checkForWinner();
     console.log('store state: ', store.getState())
     setCurrentTeam(teams[turn]);
   }, [turn])
@@ -112,7 +105,32 @@ function Game() {
 
   // функция для проверки кто достиг победного количества слов
   function checkForWinner() {
+    let maxScore = 0;
+    teams.forEach(team => {
+      const Gnumber = team.guessedWords.length;
+      const Snumber = team.skippedWords.length;
 
+      let score = 
+      settings.penaltyForSkip ?
+        Gnumber - Snumber > 0 ?
+          Gnumber - Snumber
+          : 0
+      : Gnumber;
+
+      if (score > maxScore) {
+        maxScore = score;
+        idWinning = team.id;
+      }
+      console.log(`settings: ${settings}\n team name: ${team.name}\n id winning: ${idWinning}\n max score: ${maxScore} \n turn: ${turn}\n guessed words length: ${Gnumber}\n skipped words length: ${Snumber} \n score: ${score}`);
+    })
+
+    if (maxScore > settings.wordsCountToWin) {
+      console.log('Зашел в условие maxScore > settings.wordsCountToWin!');
+      if (turn === 0) {
+        console.log('Переход на страницу с результатом!');
+        router.navigate('/result');
+      }
+    }
   }
 
   // !--------------------------------------------------------------------------------------------------!
@@ -142,6 +160,7 @@ function Game() {
   
   const startTimer = () => {
     setIsActive(true);
+    setIsStarted(true);
   };
   const resetTimer = () => {
     setIsActive(false);
@@ -161,6 +180,7 @@ function Game() {
   }
   const closeModalResults = () => {
     setIsModalResultsOpen(false);
+    //checkForWinner();
     nextTurn();
     resetTimer();
     getNewWord();
@@ -176,9 +196,7 @@ function Game() {
   }
   const closeModalTeamPicker = () => {
     setIsModalTeamPickerOpen(false);
-    nextTurn();
-    resetTimer();
-    getNewWord();
+    openModalResults();
   }
 
   // Обработчик нажатия на кнопки "правильно" и "пропуск"
@@ -218,74 +236,78 @@ function Game() {
     <>
       <DocStyles />
       <Theme />
-      {isLoaded ? 
-        isActive ?
-          <div>
-            <Container style={{display:"flex", flexDirection:"column", gap:"10px"}}>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Играет: {currentTeam.name}</h2>
-              <h2 style={{display:"flex", justifyContent:"center"}}>{words[currentWordIndex]?.value || 'No more words'}</h2>
-              <Button  onClick={() => handleOnClickNextWord('guessed')}>
-                Правильно
+      
+      { isActive ?
+        <div>
+          <Container style={{display:"flex", flexDirection:"column", gap:"10px"}}>
+            <h2 style={{display:"flex", justifyContent:"center"}}>Играет: {currentTeam.name}</h2>
+            <h2 style={{display:"flex", justifyContent:"center"}}>{words[currentWordIndex]?.value || 'No more words'}</h2>
+            <Button  onClick={() => handleOnClickNextWord('guessed')}>
+              Правильно
+            </Button>
+            <Button onClick={() => handleOnClickNextWord('skipped')}> Пропуск </Button>
+            <h2 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h2>
+            <Button onClick={pauseTimer}>Пауза</Button>
+            {/*
+            <h2 style={{display:"flex", justifyContent:"center"}}>Отладочные кнопки:</h2>
+            <Link to={'/result'}>
+              <Button>
+                Закончить игру 
               </Button>
-              <Button onClick={() => handleOnClickNextWord('skipped')}> Пропуск </Button>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h2>
-              <Button onClick={pauseTimer}>Пауза</Button>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Отладочные кнопки:</h2>
-              <Link to={'/result'}>
-                <Button>
-                  Закончить игру 
-                </Button>
-              </Link>
+            </Link>
 
-              <Button onClick={() => setTimer(0)}>
-                Пропустить ход до следующей команды
-              </Button>
-            </Container>
-            
-            <Modal isOpen={isModalResultsOpen} onClose={closeModalResults}>
-              <CellForScore
-                team_name={currentTeam.name}
-                settings={settings}
-                Gnumber={currentGuessedWords.length}
-                Snumber={currentSkippedWords.length}
-              />
-              <h2>Угаданные слова: {currentGuessedWords.map((word, index) => {
-                return index !== currentGuessedWords.length-1
-                ?  word + ', '
-                : word
-              })}</h2>
-              <h2>Пропущенные слова: {currentSkippedWords.map((word, index) => {
-                return index !== currentSkippedWords.length-1
-                ?  word + ', '
-                : word
-              })}</h2>
-            </Modal>
+            <Button onClick={() => setTimer(0)}>
+              Пропустить ход до следующей команды
+            </Button>
+            */}
+          </Container>
+          
+          <Modal isOpen={isModalResultsOpen} onClose={closeModalResults}>
+            <CellForScore
+              team_name={currentTeam.name}
+              settings={settings}
+              Gnumber={currentGuessedWords.length}
+              Snumber={currentSkippedWords.length}
+            />
+            <h2>Угаданные слова: {currentGuessedWords.map((word, index) => {
+              return index !== currentGuessedWords.length-1
+              ?  word + ', '
+              : word
+            })}</h2>
+            <h2>Пропущенные слова: {currentSkippedWords.map((word, index) => {
+              return index !== currentSkippedWords.length-1
+              ?  word + ', '
+              : word
+            })}</h2>
+          </Modal>
 
-            <Modal isOpen={isModalTeamPickerOpen} onClose={closeModalTeamPicker} buttonText={'Никому'}>
-              <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
-                <Cell content={<TextBox title={`Выберете команду, которой достанется очко за угаданное слово "${words[currentWordIndex]?.value}"`} ></TextBox>} />
-                {
-                  teams.map((team) => {
-                    return <Button onClick={() => {
-                      team.guessedWords.push(words[currentWordIndex]?.value);
-                      closeModalTeamPicker();
-                    }}>{team.name}</Button>
-                  })
-                }
-              </div>
-            </Modal>
-          </div>
-        :
+          <Modal isOpen={isModalTeamPickerOpen} onClose={closeModalTeamPicker} buttonText={'Никому'}>
+            <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
+              <Cell content={<TextBox title={`Выберете команду, которой достанется очко за угаданное слово "${words[currentWordIndex]?.value}"`} ></TextBox>} />
+              {
+                teams.map((team) => {
+                  return <Button onClick={() => {
+                    team.guessedWords.push(words[currentWordIndex]?.value);
+                    closeModalTeamPicker();
+                  }}>{team.name}</Button>
+                })
+              }
+            </div>
+          </Modal>
+        </div>
+      :
         <div>
           <Container style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
             <h2>Играет: {currentTeam.name}</h2>
             <Button onClick={startTimer}>
-                Начать игру
+                {
+                  isStarted
+                  ? 'Продолжить игру'
+                  : 'Начать игру'
+                }
             </Button>
           </Container>
         </div>
-      :  
-        <h2>Loading...</h2>
       }
     </>
   )

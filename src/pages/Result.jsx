@@ -25,7 +25,7 @@ function Result() {
         <Theme />
         <DocStyles />
 
-        <Container>
+        <Container style={{marginBottom: "100px"}}>
             <h2>Итоги игры</h2>
             {
                 teams.map((team) => {
@@ -53,7 +53,10 @@ function Result() {
                     </div>
                 })
             }
-            <Button onClick={() => navigate('/')}>
+            <Button onClick={() => {
+                store.dispatch({type: 'RESET'});
+                navigate('/');
+            }}>
                 Начать новую игру
             </Button>
         </Container>
