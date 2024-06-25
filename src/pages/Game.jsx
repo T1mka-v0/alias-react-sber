@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { store } from '../store';
 import { updateScore } from '../actions';
-import { DocStyles, Theme } from '../SberStyles';
-import { Link } from 'react-router-dom';
-import { Button, Cell, Container, TextBox } from '@salutejs/plasma-ui';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, Cell, Container, P, TextBox, h2, h3 } from '@salutejs/plasma-ui';
 import Modal from '../components/Modal';
 import CellForScore from '../components/cellForScore/CellForScore';
 import CustomButton from '../components/CustomButton';
 import wordsList from '../db/wordsList';
-
-import router from '../router';
+import './game.css'
 
 // const defaultTeam = {
 //     id: 0,
@@ -25,11 +23,15 @@ import router from '../router';
 // }
 
 function Game() {
+  const navigate = useNavigate();
   // Флаг для айдишника выигравшей команды
   let idWinning = null;
 
   // Получаем список команд из redux хранилища
-  const teams = store.getState().teamsArray;
+let teams = store.getState().teamsArray;
+  useEffect(() => {
+    teams = store.getState().teamsArray;
+  })
 
   // Объект настроек получаем из хранилища
   const settings = store.getState().settings;
@@ -57,6 +59,8 @@ function Game() {
 
   // Получение количества команд из reducer
   const numberOfTeams = store.getState().teamsArray.length;
+
+  const [thisIsLastWord, setThisIsLastWord] = useState(false);
   
   // Циклично передает ход другой команде по кругу
   function nextTurn() {
@@ -82,8 +86,6 @@ function Game() {
 
   // 
   useEffect(() => {
-    // 
-    // Можно попробовать с ретерна с функции перестать выполнять дальнейший код
     const newTeam = {
         ...currentTeam,
         guessedWords: currentGuessedWords,
@@ -121,14 +123,14 @@ function Game() {
         maxScore = score;
         idWinning = team.id;
       }
-      console.log(`settings: ${settings}\n team name: ${team.name}\n id winning: ${idWinning}\n max score: ${maxScore} \n turn: ${turn}\n guessed words length: ${Gnumber}\n skipped words length: ${Snumber} \n score: ${score}`);
+      // console.log(`settings: ${settings}\n team name: ${team.name}\n id winning: ${idWinning}\n max score: ${maxScore} \n turn: ${turn}\n guessed words length: ${Gnumber}\n skipped words length: ${Snumber} \n score: ${score}`);
     })
 
     if (maxScore > settings.wordsCountToWin) {
-      console.log('Зашел в условие maxScore > settings.wordsCountToWin!');
+      // console.log('Зашел в условие maxScore > settings.wordsCountToWin!');
       if (turn === 0) {
         console.log('Переход на страницу с результатом!');
-        router.navigate('/result');
+        navigate('/result');
       }
     }
   }
@@ -155,6 +157,7 @@ function Game() {
     }
     if (timer === 0) {
       console.log('Таймер истек!');
+      setThisIsLastWord(true);
     }
   }, [isActive, timer]);
   
@@ -179,11 +182,13 @@ function Game() {
     setIsModalResultsOpen(true);
   }
   const closeModalResults = () => {
-    setIsModalResultsOpen(false);
+    
     //checkForWinner();
     nextTurn();
     resetTimer();
     getNewWord();
+    setThisIsLastWord(false);
+    setIsModalResultsOpen(false);
   }
 
   // !--------------------------------------------------------------------------------------------------!
@@ -234,51 +239,100 @@ function Game() {
 
   return (
     <>
-      <DocStyles />
-      <Theme />
       
       { isActive ?
-        <div>
+        <div style={{marginBottom:"200px"}}>
           <Container style={{display:"flex", flexDirection:"column", gap:"10px"}}>
-            <h2 style={{display:"flex", justifyContent:"center"}}>Играет: {currentTeam.name}</h2>
-            <h2 style={{display:"flex", justifyContent:"center"}}>{words[currentWordIndex]?.value || 'No more words'}</h2>
+            <h2 style={{display:"flex", justifyContent:"center", wordBreak:"break-all"}}>{currentTeam.name}</h2>
+            <h2 style={{display:"flex", justifyContent:"center", borderBottom:"0.2rem solid rgb(220,220,220)", paddingBottom:"10px"}}>
+              {words[currentWordIndex]?.value || 'No more words'}</h2>
             <Button  onClick={() => handleOnClickNextWord('guessed')}>
               Правильно
             </Button>
             <Button onClick={() => handleOnClickNextWord('skipped')}> Пропуск </Button>
-            <h2 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h2>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h3>
+            {
+              thisIsLastWord ?
+              <h3 style={{display:"flex", justifyContent:"center"}}>Это последнее слово!</h3> :
+              <></>
+            }
             <Button onClick={pauseTimer}>Пауза</Button>
-            {/*
-            <h2 style={{display:"flex", justifyContent:"center"}}>Отладочные кнопки:</h2>
-            <Link to={'/result'}>
-              <Button>
-                Закончить игру 
-              </Button>
-            </Link>
-
-            <Button onClick={() => setTimer(0)}>
+            
+            <div>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Угадано слов: {currentGuessedWords.length}</h3>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Пропущено слов: {currentSkippedWords.length}</h3>
+            <h3>{
+                settings.penaltyForSkip ?
+                  currentTeam.guessedWords.length - currentTeam.skippedWords.length > 0 ?
+                    currentGuessedWords.length - currentSkippedWords.length > 0 ?
+                      `Осталось до победы: ${
+                        settings.wordsCountToWin - (currentTeam.guessedWords.length - currentTeam.skippedWords.length + currentGuessedWords.length - currentSkippedWords.length) > 0 ?
+                        settings.wordsCountToWin - (currentTeam.guessedWords.length - currentTeam.skippedWords.length + currentGuessedWords.length - currentSkippedWords.length)
+                        : 0
+                      }`
+                    : `Осталось до победы: ${
+                      settings.wordsCountToWin - (currentTeam.guessedWords.length - currentTeam.skippedWords.length) > 0
+                      ? settings.wordsCountToWin - (currentTeam.guessedWords.length - currentTeam.skippedWords.length)
+                      : 0
+                    }`
+                  : currentGuessedWords.length - currentSkippedWords.length > 0 ?
+                    `Осталось до победы: ${
+                      settings.wordsCountToWin - currentGuessedWords.length - currentSkippedWords.length > 0 ?
+                      settings.wordsCountToWin - currentGuessedWords.length - currentSkippedWords.length
+                      : 0
+                    }`
+                    : `Осталось до победы: ${settings.wordsCountToWin}`
+                : `Осталось до победы: ${
+                  settings.wordsCountToWin - (currentTeam.guessedWords.length + currentGuessedWords.length) > 0 ?
+                  settings.wordsCountToWin - (currentTeam.guessedWords.length + currentGuessedWords.length)
+                  : 0
+                }`
+            }</h3>
+            </div>
+            {/* Отладочная кнопка*/}
+            {/* <Button onClick={() => setTimer(0)}>
               Пропустить ход до следующей команды
-            </Button>
-            */}
+            </Button> */}
           </Container>
           
-          <Modal isOpen={isModalResultsOpen} onClose={closeModalResults}>
+          <Modal className="modalResult" isOpen={isModalResultsOpen} onClose={closeModalResults}>
             <CellForScore
               team_name={currentTeam.name}
               settings={settings}
               Gnumber={currentGuessedWords.length}
               Snumber={currentSkippedWords.length}
+              rest={() => {
+                let curScore = 0;
+                if (settings.penaltyForSkip) {
+                  if (currentGuessedWords.length > currentSkippedWords.length) {
+                    curScore = currentGuessedWords.length - currentSkippedWords.length;
+                  }
+                  else {
+                    curScore = 0;
+                  }
+                }
+                else {
+                  curScore = 0;
+                }
+                return (
+                  settings.penaltyForSkip ?
+                store.getState().teamsArray[turn].guessedWords.length - store.getState().teamsArray[turn].skippedWords.length > 0 ?
+                <h3>Общий счёт: {store.getState().teamsArray[turn].guessedWords.length - store.getState().teamsArray[turn].skippedWords.length + curScore}</h3>
+                : <h3>Общий счёт: {0 + curScore}</h3>
+            : <h3>Общий счёт: {store.getState().teamsArray[turn].guessedWords.length + curScore}</h3>
+                )
+              }}
             />
-            <h2>Угаданные слова: {currentGuessedWords.map((word, index) => {
+            <h3>Угаданные слова: {currentGuessedWords.map((word, index) => {
               return index !== currentGuessedWords.length-1
               ?  word + ', '
               : word
-            })}</h2>
-            <h2>Пропущенные слова: {currentSkippedWords.map((word, index) => {
+            })}</h3>
+            <h3>Пропущенные слова: {currentSkippedWords.map((word, index) => {
               return index !== currentSkippedWords.length-1
               ?  word + ', '
               : word
-            })}</h2>
+            })}</h3>
           </Modal>
 
           <Modal isOpen={isModalTeamPickerOpen} onClose={closeModalTeamPicker} buttonText={'Никому'}>
@@ -298,7 +352,8 @@ function Game() {
       :
         <div>
           <Container style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
-            <h2>Играет: {currentTeam.name}</h2>
+            <h2 style={{wordBreak:"break-all"}}>Сейчас Играет</h2>
+            <h2 style={{wordBreak:"break-all"}}>{currentTeam.name}</h2>
             <Button onClick={startTimer}>
                 {
                   isStarted
@@ -306,6 +361,21 @@ function Game() {
                   : 'Начать игру'
                 }
             </Button>
+            <h3>Общий счёт</h3>
+            {store.getState().teamsArray.map((team) => {
+              return (
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", gap:"15px"}}>
+                    <TextBox style={{wordBreak:"break-all"}} title={`${team.name}`} />
+                    <TextBox title={settings.penaltyForSkip ?
+                      team.guessedWords.length - team.skippedWords.length > 0 ?
+                      <p>{team.guessedWords.length - team.skippedWords.length}</p> 
+                      : <p>0</p>
+                  : <p>{team.guessedWords.length}</p>} />
+                    
+                </div>
+              )
+            })}
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
           </Container>
         </div>
       }

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { store } from '../store';
 
 import { Button, Button1, Cell, Slider, Switch, TextBox, TextField, h3 } from '@salutejs/plasma-ui';
-import { Theme, DocStyles } from '../SberStyles';
 import { Container, CellDisclosure } from '@salutejs/plasma-ui';
 import CellForScore from '../components/cellForScore/CellForScore';
 
@@ -22,34 +21,35 @@ function Result() {
     }, [])
   return (
     <div>
-        <Theme />
-        <DocStyles />
 
-        <Container style={{marginBottom: "100px"}}>
-            <h2>Итоги игры</h2>
+        <Container style={{marginBottom: "200px"}}>
+            <h1>Итоги игры</h1>
             {
                 teams.map((team) => {
                     return <div>
+                        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
                         <CellForScore
                             team_name={team.name}
                             settings={settings}
                             Gnumber={team.guessedWords.length}
                             Snumber={team.skippedWords.length}
                         />
-                        <h2>
-                            Угаданыые слова: {team.guessedWords.map((word, index) => {
+                        <h3>
+                            Угаданные слова: {team.guessedWords.map((word, index) => {
                                 return index !== team.guessedWords.length-1
                                 ?  word + ', '
                                 : word
                             })}
-                        </h2>
-                        <h2>
-                            Пропущенные слова: {team.skippedWords.map((word, index) => {
+                        </h3>
+                        <h2> Пропущенные слова:</h2>
+                        <h3>
+                        {team.skippedWords.map((word, index) => {
                                 return index !== team.skippedWords.length-1
                                 ?  word + ', '
                                 : word
                             })}
-                        </h2>
+                        </h3>
+                        
                     </div>
                 })
             }

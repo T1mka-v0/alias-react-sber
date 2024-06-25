@@ -1,20 +1,18 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider, Link } from 'react-router-dom';
 import { store } from './store';
-
-import { Theme, DocStyles } from './SberStyles';
+import { DocStyles, Theme } from './styles/SberStyles';
 
 import { createAssistant, createSmartappDebugger } from '@salutejs/client';
 import { Button, Container } from '@salutejs/plasma-ui';
+import { GlobalStyle } from './styles/GlobalStyle';
 //import { send_action_value, assistant } from './assistant';
 
 function App() {
 
   return (
     <div className="App" style={{display:"flex", flexDirection:"column", alignContent:"center", justifyContent:"center"}}>
-      <DocStyles />
-      <Theme />
-      <h1 style={{display:"flex", justifyContent:"center"}}>Alias</h1>
+      <h1 style={{display:"flex", justifyContent:"center"}}>Отгадай слово</h1>
       <nav>
         <ul style={{listStyleType: "none", padding:"0px 0px"}}>
           <li>
@@ -24,7 +22,7 @@ function App() {
                   onClick={() => {
                     //send_action_value('to_settings', 1);
                   }}
-                >Начать игру</Button>
+                >Настроить игру</Button>
               </Link>
             </Container>
           </li>

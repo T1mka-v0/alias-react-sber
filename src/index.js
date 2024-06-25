@@ -11,12 +11,10 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
-import router from './router';
+import { router } from './assistant';
 
 import { DeviceThemeProvider } from '@salutejs/plasma-ui';
-import { GlobalStyle } from './GlobalStyle';
-import { createGlobalStyle } from 'styled-components';
-import assistant from './assistant';
+import { GlobalStyle } from './styles/GlobalStyle';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

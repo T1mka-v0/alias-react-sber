@@ -15,11 +15,18 @@ import {
   setWordsCountToWin,
 } from './actions';
 
-import router from './router';
+import { Outlet, createBrowserRouter } from 'react-router-dom';
+import Game from './pages/Game';
+import Rules from './pages/Rules';
+import Settings from './pages/Settings';
+import App from './App';
+import ErrorPage from './pages/error-page';
+import Result from './pages/Result';
+// import router from './router';
 
 const dev = false;
 const artem_token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJlMWIwODVmOS1jYTM0LTQ2MzAtOTUxYS1mYjEwYzBmOTE5NTkiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxODI4ODI2OSwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE4MjAxODU5LCJzaWQiOiI0MjhiZjliMi01Y2Q5LTRmNzYtOTk3NS01NDYyMDAyMTQyMGMifQ.ehBmpDskomZw4kT0dNb0eFRYXVrG1g0xSSZJjD2I_6sDfSZeJRcSnPe3gWrX4Wzn_w41b8UHDN4W7YET8s88FT9HuMQf3-QjH99Sp5uSc9MZXGqg8FE2_TewYkQFLjj4WIx3J02r_vUfXuKeIz44mYHFSSwljwYMc4xU5ZSMb4BMQg4PUUKJnPKeC_5lxNVG5E4w6BpAqSXqdn0xckMcnCIbBYlAbZWI2U0YH57g7_ro6uQ8IPcPmKdJBznvDlP8gTe4uZLQlogD78h2CrrjxFh8uxzEk-y0kF64h_Iu0rwLkOd9PD_-_Aes_HfFhN97xPvg-QRSoTg2l6PbwYBz75dps1KQYLMGwcKGWwDaxgO0ps_-I8WbcmiUbtYKwAaoATaBZnOXNPU7pLnV9dYukFQ362hej8KU-apfLjvQTKwwaxUXNPQPgRjKV_sUEfIvOd7HfnKahmrbsWqtqgpbHT4Sac190xi7nvqB43MPRHpQpy93Hdtle8z8KBhr6LAjdAcGtgO1m8RboTfzTLLGPgoCYt1WZsFdy2G2KoEMgBtrz8t8U2Kd2dhJBbvRvFIdwXwio0-5rJZQpiqZPJjH--KUbCZqvHxLBmCLuttMKellZKB64tAYgStEVQyDqy8M21M4qDokm-hOTjiFu_5qNKMEK2VLmHa28_OkxNKZ9eo';
+  `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJiM2VlZjhiYy1lMmQzLTQxNjgtODJiZi01NGZjOGRmOTg5NjYiLCJzdWIiOiJmNTY2OWE2MWI3ZGFhN2I1MWQzYThmOGQyM2ZjZDRkZmRkZGJiMWI0ODI4MzUyNGI5OGRmODNhNzMwYjg5MWU0NTM5YmU5MjcwMDQyNjI5OCIsImlzcyI6IktFWU1BU1RFUiIsImV4cCI6MTcxOTMwODcxOSwiYXVkIjoiVlBTIiwidXNyIjoiMzc4MDg2OTctYmM0NS00NTkyLTk4ZmItOWEzYjBmMWZiZTI3IiwiaWF0IjoxNzE5MjIyMzA5LCJzaWQiOiIwNzAxZDJjOC00MjRjLTQwNTYtODQwMy01OGI2MTRkYmRiNzgifQ.DTJtnG2hRU_2EY4xoCnTH-s-J4mOXMf80PpLkOkhBEjazefzfttY06dCTDhNSSivdAg9VzWqDjGW9HHqoAgB-BoJF3VQbkK980NmLkctdyn9DJzO8olwAr2fVq-Ls0Ldemhgla1FwS71iZ8nwmCDTUF0p6NRgxAJ530t8xHI_JBdXMxMin8Bi56U5SuVFGWSkxcCb91uxXS9cSrsXA0SNbkw_uk1Srw4rVtRQW1r2lShqOdKaTKnUND8ICJ6w35Z4q5wy0Js8P8E_zGTCJuVfV8AtebvRAn6OwlSUZ8QNUjdebgeFdHVraKyiDNuCbZ71oYNvtbG1JzsQPb3qdLV7gDhUrX3VjyQl-FWNjY-kjQ44oEcvjWhUpgQMBzOJR6nTDnbEQ-LV6emdone5R5FFAp6vfw3hyWzSmnGvVXzIPFQRyYx-BHSfC1hJFFAq66Qs8EDy8x2LVmewbOBWInTXfCBoFFk_skOEEg1oSn9YsJGGZzH-lPs66pDwgDI6hnexS7RTYLUitx17wR5pBNlqEa5UyN0S1mxsz2TupgJ0tTbj9Ejp5ioTHQiaUyJWWe9au5kOhc4UiOmghLuzXMP7YlCy9oEO4RIQqc9tZBe90hadOaAEdBbjOmQOWcQJq8MLkVFQ_0WK76BVldKBezItO8YEiLtwLh1tgsPo1Jb7fM`;
 
 const initialize = (getState) => {
   if (dev) {
@@ -27,8 +34,8 @@ const initialize = (getState) => {
       // Токен из Кабинета разработчика
       token: artem_token,
       // Пример фразы для запуска смартапа process.env.REACT_APP_TOKEN ?? ''
-      // initPhrase: 'Запусти Элиас',
-      initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+      initPhrase: 'Запусти Элиас',
+      // initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
       // Текущее состояние смартапа
       getState,
       // Состояние смартапа, с которым он будет восстановлен при следующем запуске
@@ -127,7 +134,11 @@ function dispatchAssistantAction(command) {
         router.navigate('/game');
         break;
 
-      case 'back':
+      case 'go_to_rules':
+        router.navigate('/rules');
+        break;
+
+      case 'go_back':
         window.history.back();
         break;
       // case 'back':
@@ -164,6 +175,10 @@ function dispatchAssistantAction(command) {
         store.dispatch(setCommonLastWord(false));
         console.log('Штраф за последнее слово выключен!');
         break;
+
+      case 'start_over':
+        store.dispatch({type: 'RESET'});
+        router.navigate('/');
       default:
         console.log('Получена ошибочная команда');
     }
@@ -180,7 +195,7 @@ assistant.on('command', (command) => {
   console.log('Command: ', command);
 });
 
-export function send_action_value(action_id, value) {
+function send_action_value(action_id, value) {
   const data = {
     action: {
       action_id: action_id,
@@ -190,10 +205,45 @@ export function send_action_value(action_id, value) {
       },
     },
   };
-  const unsubscribe = assistant.sendData(data, (data) => {
-    // функция, вызываемая, если на sendData() был отправлен ответ
-    const { type, payload } = data;
-    console.log('sendData onData:', type, payload);
-    unsubscribe();
-  });
+  assistant.sendData(data);
+  // const unsubscribe = assistant.sendData(data, (data) => {
+  //   // функция, вызываемая, если на sendData() был отправлен ответ
+  //   const { type, payload } = data;
+  //   console.log('sendData onData:', type, payload);
+  //   unsubscribe();
+  // });
 }
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: (
+      <>
+        <Outlet />
+      </>
+    ),
+    children: [
+      {
+        path: 'game',
+        element: <Game />,
+      },
+      {
+        path: 'rules',
+        element: <Rules />,
+      },
+      {
+        path: '/',
+        element: <App />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: 'settings',
+        element: <Settings send_action_value={send_action_value}/>,
+      },
+      {
+        path: 'result',
+        element: <Result />,
+      }
+    ],
+  },
+]);

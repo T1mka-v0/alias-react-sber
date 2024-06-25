@@ -1,18 +1,29 @@
 import { Cell, TextBox } from '@salutejs/plasma-ui'
 import React from 'react'
 
-function CellForScore({team_name, settings, Gnumber, Snumber}) {
+function CellForScore({team_name, settings, Gnumber, Snumber, rest}) {
   return (
-    <Cell // условие на неотрицательность счета
-        content={<TextBox title={`Команда: ${team_name}`} subTitle={
-            settings.penaltyForSkip ?
+    <>
+      <h3>{team_name} </h3>
+      <h3>{settings.penaltyForSkip ?
                 Gnumber - Snumber > 0 ?
-                `Счёт: ${Gnumber - Snumber}`
-                : 'Счёт: 0'
-            : `Счёт: ${Gnumber}`
-        } />}
-    />
+                `Текущий счёт: ${Gnumber - Snumber}`
+                : 'Текущий счёт: 0'
+            : `Текущий счёт: ${Gnumber}`}</h3>
+      {rest}
+    </>
   )
 }
 
 export default CellForScore
+
+/*
+`Команда: ${team_name}` 
+
+settings.penaltyForSkip ?
+                Gnumber - Snumber > 0 ?
+                `Текущий счёт: ${Gnumber - Snumber}`
+                : 'Текущий счёт: 0'
+            : `Текущий счёт: ${Gnumber}`
+
+*/

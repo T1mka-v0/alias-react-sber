@@ -13,8 +13,8 @@ import {
  } from '../actions';
 
 import { Button, Cell, Slider, Switch, TextBox, TextField, Checkbox } from '@salutejs/plasma-ui';
-import { Theme, DocStyles } from '../SberStyles';
 import { Container, CellDisclosure } from '@salutejs/plasma-ui';
+import { DocStyles, Theme } from '../styles/SberStyles';
 
 // Адаптивная типографика
 import { BodyL, bodyL, bodyM, bodyLBold } from '@salutejs/plasma-ui';
@@ -22,10 +22,10 @@ import { IconAddFill, IconAnimalFill, IconChatFill, IconCross, IconNextOutline, 
 import Modal from '../components/Modal';
 import { useSelector } from 'react-redux';
 
-import { send_action_value } from '../assistant';
+//import { send_action_value } from '../assistant';
 import assistant from '../assistant';
 
-function Settings() {
+function Settings({send_action_value}) {
 
   // Настройки игры
   const [duration, setDuration] = useState(store.getState().settings.roundDuration);
@@ -106,8 +106,6 @@ function Settings() {
 
   return (
     <div style={{marginBottom: '200px'}}>
-      <DocStyles />
-      <Theme />
       {/* Модальное окно для изменения названия команды */}
       <Modal isOpen={modalRename.opened} onClose={closeModal}>
         <TextField 
@@ -157,13 +155,16 @@ function Settings() {
       { /* ------------------------------------------------------------------------------ */ }
       {/* Список команд */}
       { /* ------------------------------------------------------------------------------ */ }
-      <Container style={{display:"flex", flexDirection:"column", gap:"0.5rem"}}>
+      <Container style={{display:"flex", flexDirection:"column", gap:"0.5rem", 
+         paddingTop:"10px", paddingBottom:"10px"}}>
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
+      <TextBox title={'Названия команд, которые будут играть:'} />
         {teams.map((team) => {
           return (
             <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
               <Cell
                 key={team.id}
-                content={<TextBox style={{marginLeft:"10px"}} title={`${team.name}`} />}
+                content={<TextBox style={{marginLeft:"10px", wordBreak:"break-all"}} title={`${team.name}`} />}
                 contentLeft={`${team.id}.`}
               >
               </Cell>
@@ -182,13 +183,14 @@ function Settings() {
             </div>
           )
         })}
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
       </Container>
 
       { /* ------------------------------------------------------------------------------ */ }
       {/* Продолжительность раунда */}
       { /* ------------------------------------------------------------------------------ */ }
       <Container>
-        <h2>Продолжительность раунда: {duration} сек.</h2>
+        <h3>Продолжительность раунда: {duration} сек.</h3>
         <Slider
           onChange={(value) => {
             setDuration(value);
@@ -207,7 +209,7 @@ function Settings() {
       {/* Количество слов для победы */}
       { /* ------------------------------------------------------------------------------ */ }
       <Container>
-        <h2>Количество слов для победы: {wordsCount}</h2>
+        <h3>Количество слов для победы: {wordsCount}</h3>
         <Slider
           onChange={(value) => {
             setWordsCount(value);
@@ -217,14 +219,14 @@ function Settings() {
             store.dispatch(setWordsCountToWin(value));
           }}
           min={10}
-          max={60}
+          max={90}
           value={wordsCount}
         />
       </Container>
       
       <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Общее последнее слово</h2>
+          <h3>Общее последнее слово</h3>
           <Switch
             checked={commonLW}
             onChange={() => {
@@ -236,7 +238,7 @@ function Settings() {
 
       <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Штраф за пропуск</h2>
+          <h3>Штраф за пропуск</h3>
           <Switch
             checked={penalty}
             onChange={() => {
@@ -249,7 +251,7 @@ function Settings() {
       {/* Test */}
       {/* <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Общее последнее слово</h2>
+          <h3>Общее последнее слово</h3>
           <Checkbox
             value={commonLW}
             onChange={() => {
@@ -269,7 +271,7 @@ function Settings() {
           disabled={teams.length <= 1}
           onClick={() => {
             navigate('/game')
-            // send_action_value('start_game', true);
+            send_action_value('start_game', 1);
           }}
         >
         </Button>
