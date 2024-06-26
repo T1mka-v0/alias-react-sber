@@ -44,7 +44,7 @@ function Settings({send_action_value}) {
   const storeSubscribe = useSelector(state => state);
 
   useEffect(() => {
-    console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
+    // console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
     setTeams(store.getState().teamsArray);
     setDuration(store.getState().settings.roundDuration);
     setWordsCount(store.getState().settings.wordsCountToWin);

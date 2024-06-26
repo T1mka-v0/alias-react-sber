@@ -6,13 +6,15 @@ const initialState = {
       id: 1,
       name: 'Red Hot Chilly Peppers',
       guessedWords: [],
-      skippedWords: []
+      skippedWords: [],
+      score: 0
     },
     {
       id: 2,
       name: 'Green Picky Cucumbers',
       guessedWords: [],
-      skippedWords: []
+      skippedWords: [],
+      score: 0
     }
   ],
   settings: {
@@ -44,7 +46,8 @@ const reducer = (state = initialState, action) => {
     case 'UPDATE_SCORE':
       let updatedTeam = state.teamsArray.find(team => team.id === action.payload.team.id);
       updatedTeam.guessedWords?.push(...action.payload.team.guessedWords);
-      updatedTeam.skippedWords?.push(...action.payload.team.skippedWords)
+      updatedTeam.skippedWords?.push(...action.payload.team.skippedWords);
+      updatedTeam.score = action.payload.team.score;
       return Object.assign({}, state, {
         teamsArray: state.teamsArray.map(team => team.id === action.payload.team.id ? updatedTeam : team)
       })
