@@ -5,8 +5,9 @@ import { text, background, gradient } from '@salutejs/plasma-tokens';
 export const DocStyles = createGlobalStyle`
     html {
         color: ${text};
-        background-color: ${background};
-        background-image: ${gradient};
+        background-image: url('/src/img/back.png');
+        background-size: cover;
+        background-position: center;
 
         /** необходимо залить градиентом всю подложку */
         min-height: 100vh;

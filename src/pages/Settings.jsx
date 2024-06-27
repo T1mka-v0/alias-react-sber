@@ -13,8 +13,8 @@ import {
  } from '../actions';
 
 import { Button, Cell, Slider, Switch, TextBox, TextField, Checkbox } from '@salutejs/plasma-ui';
-import { Theme, DocStyles } from '../SberStyles';
 import { Container, CellDisclosure } from '@salutejs/plasma-ui';
+import { DocStyles, Theme } from '../styles/SberStyles';
 
 // Адаптивная типографика
 import { BodyL, bodyL, bodyM, bodyLBold } from '@salutejs/plasma-ui';
@@ -22,7 +22,10 @@ import { IconAddFill, IconAnimalFill, IconChatFill, IconCross, IconNextOutline, 
 import Modal from '../components/Modal';
 import { useSelector } from 'react-redux';
 
-function Settings() {
+//import { send_action_value } from '../assistant';
+import assistant from '../assistant';
+
+function Settings({send_action_value}) {
 
   // Настройки игры
   const [duration, setDuration] = useState(store.getState().settings.roundDuration);
@@ -41,9 +44,12 @@ function Settings() {
   const storeSubscribe = useSelector(state => state);
 
   useEffect(() => {
-    console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
+    // console.log('Запрос на ререндер при обновлении стора', storeSubscribe);
     setTeams(store.getState().teamsArray);
-    console.log('storeSubscribe: ', storeSubscribe);
+    setDuration(store.getState().settings.roundDuration);
+    setWordsCount(store.getState().settings.wordsCountToWin);
+    setCommonLW(store.getState().settings.commonLastWord);
+    setPenalty(store.getState().settings.penaltyForSkip);
   },[storeSubscribe])
 
   const handleAddTeam = () => {
@@ -61,6 +67,7 @@ function Settings() {
     console.log('Next id: ', store.getState().teamId);
   }
 
+  // Удаление команды по id
   const deleteTeamById = (id) => {
     store.dispatch(removeTeam(id));
     store.dispatch(setNewId());
@@ -98,9 +105,7 @@ function Settings() {
   }
 
   return (
-    <div style={{height:"2000px"}}>
-      <DocStyles />
-      <Theme />
+    <div style={{marginBottom: '200px'}}>
       {/* Модальное окно для изменения названия команды */}
       <Modal isOpen={modalRename.opened} onClose={closeModal}>
         <TextField 
@@ -112,6 +117,10 @@ function Settings() {
         />
       </Modal>
       <h1 style={{display:"flex", justifyContent:"center"}}>Настройки</h1>
+      
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Поле для названия команды */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container style={{marginBottom:"10px"}}>
         <TextField
           placeholder='Название команды'
@@ -121,7 +130,9 @@ function Settings() {
           helperText={currentTeamName === '' ? 'Название команды не может быть пустым' : null}
         />
       </Container>
-
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Кнопка для добавления команды */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
       <Button
         style={{marginBottom:"10px", height:"4rem", letterSpacing:"1px"}}
@@ -132,20 +143,29 @@ function Settings() {
       ></Button>
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Всплывающая подсказка о малом количестве команд */}
+      { /* ------------------------------------------------------------------------------ */ }
       {teams.length <= 1 &&
         <Container>
           <Cell content={<TextBox style={{marginLeft:"10px"}} title='Для игры должно быть больше одной команды' /> }></Cell>
         </Container>
       }
 
-      <Container>
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Список команд */}
+      { /* ------------------------------------------------------------------------------ */ }
+      <Container style={{display:"flex", flexDirection:"column", gap:"0.5rem", 
+         paddingTop:"10px", paddingBottom:"10px"}}>
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
+      <TextBox title={'Названия команд, которые будут играть:'} />
         {teams.map((team) => {
           return (
             <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
               <Cell
                 key={team.id}
-                content={<TextBox style={{marginLeft:"10px"}} title={`${team.name}`} />}
-                contentLeft={<CellDisclosure tabIndex={-1} />}
+                content={<TextBox style={{marginLeft:"10px", wordBreak:"break-all"}} title={`${team.name}`} />}
+                contentLeft={`${team.id}.`}
               >
               </Cell>
               <div style={{display:"flex", alignItems:"center", gap:"0.5rem"}}>
@@ -163,10 +183,14 @@ function Settings() {
             </div>
           )
         })}
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Продолжительность раунда */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
-        <h2>Продолжительность раунда: {duration} сек.</h2>
+        <h3>Продолжительность раунда: {duration} сек.</h3>
         <Slider
           onChange={(value) => {
             setDuration(value);
@@ -181,8 +205,11 @@ function Settings() {
         />
       </Container>
 
+      { /* ------------------------------------------------------------------------------ */ }
+      {/* Количество слов для победы */}
+      { /* ------------------------------------------------------------------------------ */ }
       <Container>
-        <h2>Количество слов для победы: {wordsCount}</h2>
+        <h3>Количество слов для победы: {wordsCount}</h3>
         <Slider
           onChange={(value) => {
             setWordsCount(value);
@@ -192,20 +219,17 @@ function Settings() {
             store.dispatch(setWordsCountToWin(value));
           }}
           min={10}
-          max={60}
+          max={90}
           value={wordsCount}
         />
       </Container>
       
-      {/* Поменять gap между объектами */}
-      
       <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Общее последнее слово</h2>
+          <h3>Общее последнее слово</h3>
           <Switch
-            value={commonLW}
+            checked={commonLW}
             onChange={() => {
-              setCommonLW(!commonLW);
               store.dispatch(setCommonLastWord(!commonLW));
             }}
           />
@@ -214,11 +238,10 @@ function Settings() {
 
       <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Штраф за пропуск</h2>
+          <h3>Штраф за пропуск</h3>
           <Switch
-            value={penalty}
+            checked={penalty}
             onChange={() => {
-              setPenalty(!penalty);
               store.dispatch(setPenaltyForSkip(!penalty));
             }}
           />
@@ -226,9 +249,9 @@ function Settings() {
       </Container>
 
       {/* Test */}
-      <Container>
+      {/* <Container>
         <div style={{display:"flex", justifyContent:"space-between"}}>
-          <h2>Общее последнее слово</h2>
+          <h3>Общее последнее слово</h3>
           <Checkbox
             value={commonLW}
             onChange={() => {
@@ -237,20 +260,23 @@ function Settings() {
             }}
           />
         </div>
+      </Container> */}
+
+      {/* <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
+      <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button> */}
+      
+      <Container>
+        <Button
+          text='Начать игру'
+          disabled={teams.length <= 1}
+          onClick={() => {
+            navigate('/game')
+            send_action_value('startGame', null);
+          }}
+        >
+        </Button>
       </Container>
 
-      <Button  onClick={() => setPenaltyForSkip(true)}>Вкл штраф</Button>
-      <Button  onClick={() => setPenaltyForSkip(false)}>Выкл штраф</Button>
-      
-      <Link to={'/game'}>
-        <Container>
-          <Button
-            text='Начать игру'
-            disabled={teams.length <= 1}
-          >
-          </Button>
-        </Container>
-      </Link>
     </div>
   )
 }

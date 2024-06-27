@@ -9,11 +9,17 @@
     align-items: center;
     justify-content: center;
     z-index: 10;
+    overflow-y: auto; /* Позволяет прокручивать содержимое модального окна */
 }
 .modal-content {
-    padding: 30px;
+    padding-top: 10px;
+    padding-bottom: 30%;
+    padding-left: 30px;
+    padding-right: 30px;
     border-radius: 12px;
     background-color: #242b33;
+    max-width: 90%; /* Ограничиваем ширину содержимого, чтобы оно не выходило за рамки экрана */
+    margin: auto; /* Центрирование содержимого */
 }
 .button-wrap {
     display: flex;

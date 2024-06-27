@@ -1,36 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { store } from '../store';
-import { updateScore } from '../actions';
-import { DocStyles, Theme } from '../SberStyles';
-import { Link } from 'react-router-dom';
-import { Button, Cell, Container, TextBox } from '@salutejs/plasma-ui';
+import { updateScore, addOneWord } from '../actions';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button, Cell, Container, P, TextBox, h2, h3 } from '@salutejs/plasma-ui';
 import Modal from '../components/Modal';
 import CellForScore from '../components/cellForScore/CellForScore';
 import CustomButton from '../components/CustomButton';
 import wordsList from '../db/wordsList';
-
-// const defaultTeam = {
-//     id: 0,
-//     name: '',
-//     score: 0,
-//     currentGuessedWords: []
-// }
-// const settingsInitialState = {
-//     roundDuration: 60,
-//     wordsCountToWin: 30,
-//     commonLastWord: false,
-//     penaltyForSkip: false
-// }
+import './game.css'
 
 function Game() {
-  // Получаем список команд из redux хранилища
-  const teams = store.getState().teamsArray;
+  const navigate = useNavigate();
+  // Флаг для айдишника выигравшей команды
+  let idWinning = null;
 
   // Объект настроек получаем из хранилища
   const settings = store.getState().settings;
-
-  // Загрузчик
-  const [isLoaded, setIsLoaded] = useState(true);
 
   // Стэйты для слов
   let [words, setWords] = useState([]);
@@ -38,36 +23,54 @@ function Game() {
 
   // Стэйты для команд
 
-  // Id команды, у которой сейчас ход. На этот стейт повешен слушатель useEffect, который
+  // Id-1 команды, у которой сейчас ход. На этот стейт повешен слушатель useEffect, который
   // диспатчит новый счёт команды в редьюсер и дает ход следующей команде
   const [turn, setTurn] = useState(0);
   // Текущая команда (по очереди берутся из reducerа)
-  const [currentTeam, setCurrentTeam] = useState(teams[0]);
-  // Текущий локальный список угаданных слов, нужный для рендера в модальном окне
-  // и отправки в reducer
-  const [currentGuessedWords, setCurrentGuessedWords] = useState([]);
-  // Текущий локальный список пропушенных слов, нужный для рендера в модальном окне
-  // и отправки в reducer, а также для счёта score
-  const [currentSkippedWords, setCurrentSkippedWords] = useState([]);
-  
-  // Запрос на сервер для получения json слов
-  // const request = async () => {
-  //   const url = '../words/words.json';
-  //   await fetch(url)
-  //     .then((response) => response.json())
-  //     .then((data) => { 
-  //       console.log('Data received');
-  //       setWords(data);
-  //     })
-  //     .catch(e => console.log(e))
-  // }
+  const [currentTeam, setCurrentTeam] = useState(store.getState().teamsArray[0]);
+
+  // Определяет была ли начата игра (для того, чтобы отображать фразу продолжить вместо начать)
+  const [isStarted, setIsStarted] = useState(false);
 
   // Получение количества команд из reducer
   const numberOfTeams = store.getState().teamsArray.length;
+
+  const [thisIsLastWord, setThisIsLastWord] = useState(false);
+
+  const [tempModalGuessedWord, setTempModalGuessedWord] = useState('');
+
+  const [currentGuessedWords, setCurrentGuessedWords] = useState([]);
+  const [currentSkippedWords, setCurrentSkippedWords] = useState([]);
+  const [localScore, setLocalScore] = useState(0);
+
+  useEffect(() => {
+    if (settings.penaltyForSkip) {
+      if (currentGuessedWords.length > currentSkippedWords.length) {
+        setLocalScore(currentGuessedWords.length - currentSkippedWords.length);
+      } else {
+        setLocalScore(0);
+      }
+    } else {
+      setLocalScore(currentGuessedWords.length);
+    }
+  }, [currentGuessedWords, currentSkippedWords])
+
+  function addCurrentGuessedWord(word) {
+    setCurrentGuessedWords(prevState => (
+      [...prevState, word]
+    ))
+  }
+  function addCurrentSkippedWord(word) {
+    setCurrentSkippedWords(prevState => (
+      [...prevState, word]
+    ))
+  }
   
   // Циклично передает ход другой команде по кругу
   function nextTurn() {
+    //checkForWinner();
     setTurn((turn+1) % numberOfTeams);
+    setIsStarted(false);
     console.log('Отработал next turn!');
   }
 
@@ -78,41 +81,96 @@ function Game() {
     setCurrentWordIndex(clampedIndex);
   }
 
-  // Делает запрос на сервер json для получения слов и устанавливает статус "Loaded"
-  useEffect (() => {
-    // request();
-    // setIsLoaded(true);
-    // console.log(numberOfTeams);
-    // console.log(teams);
-    // console.log(currentTeam)
-    console.log('Локальные настройки: ', settings);
-    console.log('Настройки в сторе: ', store.getState().settings);
-    setWords(wordsList);
-  }, []);
-
-  // 
-  useEffect(() => {
-    const newTeam = {
-        ...currentTeam,
-        guessedWords: currentGuessedWords,
-        skippedWords: currentSkippedWords
+  function shuffleArray(array) {
+    const ans = [...array];
+    console.log('ANS', ans)
+    for (let i = ans.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [ans[i], ans[j]] = [ans[j], ans[i]]; // Элементы меняются местами
     }
-    setCurrentSkippedWords([]);
+    return ans;
+}
+
+function createObjectsWordsFromArray(words) {
+  let ans = words.map((word, index) => {
+    return {"id": index, "value": word};
+  })
+  return ans;
+}
+
+// Делает запрос на сервер json для получения слов и устанавливает статус "Loaded"
+useEffect (() => {
+  store.getState();
+    const localWordsList = [...wordsList];
+    //console.log('Локальные настройки: ', settings);
+    //console.log('Настройки в сторе: ', store.getState().settings);
+    // console.log('Изначальный', localWordsList);
+
+    const shuffledWordsList = shuffleArray(localWordsList);
+    // console.log('Перемешанный', shuffledWordsList);
+
+    const objectWordsList = createObjectsWordsFromArray(shuffledWordsList);
+    // console.log('Объектный', objectWordsList);
+
+    setWords(objectWordsList);
+}, []);
+
+  // useEffect при новом ходе
+  useEffect(() => {
+    
+    //console.log(`Локальное состояние команды ${newTeam.name}: `, newTeam);
+    store.dispatch(updateScore(currentTeam.id, currentTeam.guessedWords, currentTeam.skippedWords, currentTeam.score));
+    checkForWinner();
+    //console.log('store state: ', store.getState())
+    setCurrentTeam(store.getState().teamsArray[turn]);
+    setTempModalGuessedWord('');
     setCurrentGuessedWords([]);
-    console.log(`Локальное состояние команды ${newTeam.name}: `, newTeam);
-    store.dispatch(updateScore(newTeam.id, newTeam.guessedWords, newTeam.skippedWords));
-    console.log('store state: ', store.getState())
-    setCurrentTeam(teams[turn]);
+    setCurrentSkippedWords([]);
   }, [turn])
 
   useEffect(() => {
-    console.log('Угаданные: ', currentGuessedWords);
-    console.log('Пропущенные: ', currentSkippedWords);
-  }, [currentSkippedWords, currentGuessedWords])
+    if (settings.penaltyForSkip) {
+      if (currentTeam.guessedWords.length > currentTeam.skippedWords.length) {
+        setCurrentTeam(prevState => ({
+          ...prevState,
+           score: currentTeam.guessedWords.length - currentTeam.skippedWords.length
+         }));
+      }
+      else {
+        setCurrentTeam(prevState => ({
+          ...prevState,
+           score: 0
+         }));
+      }
+    } else {
+      setCurrentTeam(prevState => ({
+        ...prevState,
+         score: currentTeam.guessedWords.length
+       }));
+    }
+    
+  }, [currentTeam.guessedWords, currentTeam.skippedWords])
 
   // функция для проверки кто достиг победного количества слов
   function checkForWinner() {
+    let maxScore = 0;
+    store.getState().teamsArray.forEach(team => {
+      if (team.score > maxScore) {
+        maxScore = team.score;
+        idWinning = team.id;
+      }
+      // console.log(`settings: ${settings}\n team name: ${team.name}\n id winning: ${idWinning}\n max score: ${maxScore} \n turn: ${turn}\n guessed words length: ${Gnumber}\n skipped words length: ${Snumber} \n score: ${score}`);
+    })
 
+    if (maxScore > settings.wordsCountToWin) {
+      // console.log('Зашел в условие maxScore > settings.wordsCountToWin!');
+      if (turn === 0) {
+        //console.log('Переход на страницу с результатом!');
+        maxScore = 0;
+        idWinning = null;
+        navigate('/result');
+      }
+    }
   }
 
   // !--------------------------------------------------------------------------------------------------!
@@ -137,11 +195,13 @@ function Game() {
     }
     if (timer === 0) {
       console.log('Таймер истек!');
+      setThisIsLastWord(true);
     }
   }, [isActive, timer]);
   
   const startTimer = () => {
     setIsActive(true);
+    setIsStarted(true);
   };
   const resetTimer = () => {
     setIsActive(false);
@@ -160,10 +220,12 @@ function Game() {
     setIsModalResultsOpen(true);
   }
   const closeModalResults = () => {
-    setIsModalResultsOpen(false);
+    //checkForWinner();
     nextTurn();
     resetTimer();
     getNewWord();
+    setThisIsLastWord(false);
+    setIsModalResultsOpen(false);
   }
 
   // !--------------------------------------------------------------------------------------------------!
@@ -176,10 +238,22 @@ function Game() {
   }
   const closeModalTeamPicker = () => {
     setIsModalTeamPickerOpen(false);
-    nextTurn();
-    resetTimer();
-    getNewWord();
+    openModalResults();
   }
+
+  const addGuessedWord = (newWord) => {
+    setCurrentTeam(prevState => ({
+     ...prevState,
+      guessedWords: [...prevState.guessedWords, newWord]
+    }));
+  };
+
+  const addSkippedWord = (newWord) => {
+    setCurrentTeam(prevState => ({
+     ...prevState,
+      skippedWords: [...prevState.skippedWords, newWord]
+    }));
+  };
 
   // Обработчик нажатия на кнопки "правильно" и "пропуск"
   const handleOnClickNextWord = (type) => {
@@ -187,11 +261,15 @@ function Game() {
     if (timer !== 0) {
       if (type === 'guessed') {
         console.log('guessed');
-        setCurrentGuessedWords([...currentGuessedWords, words[currentWordIndex]?.value]);
+        addGuessedWord(words[currentWordIndex]?.value);
+        addCurrentGuessedWord(words[currentWordIndex]?.value);
+        // setCurrentGuessedWords([...currentGuessedWords, words[currentWordIndex]?.value]);
       }
       if (type === 'skipped') {
         console.log('skipped');
-        setCurrentSkippedWords([...currentSkippedWords, words[currentWordIndex]?.value]);
+        // setCurrentSkippedWords([...currentSkippedWords, words[currentWordIndex]?.value]);
+        addSkippedWord(words[currentWordIndex]?.value);
+        addCurrentSkippedWord(words[currentWordIndex]?.value);
       }
       getNewWord();
     }
@@ -202,13 +280,15 @@ function Game() {
           openModalTeamPicker();
         }
         else {
-          setCurrentGuessedWords([...currentGuessedWords, words[currentWordIndex]?.value]);
+          addGuessedWord(words[currentWordIndex]?.value);
+          addCurrentGuessedWord(words[currentWordIndex]?.value);
           openModalResults();
         }
       }
       if (type === 'skipped') {
         console.log('skipped');
-        setCurrentSkippedWords([...currentSkippedWords, words[currentWordIndex]?.value]);
+        addSkippedWord(words[currentWordIndex]?.value);
+        addCurrentSkippedWord(words[currentWordIndex]?.value);
         openModalResults();
       }
     }
@@ -216,76 +296,105 @@ function Game() {
 
   return (
     <>
-      <DocStyles />
-      <Theme />
-      {isLoaded ? 
-        isActive ?
-          <div>
-            <Container style={{display:"flex", flexDirection:"column", gap:"10px"}}>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Играет: {currentTeam.name}</h2>
-              <h2 style={{display:"flex", justifyContent:"center"}}>{words[currentWordIndex]?.value || 'No more words'}</h2>
-              <Button  onClick={() => handleOnClickNextWord('guessed')}>
-                Правильно
-              </Button>
-              <Button onClick={() => handleOnClickNextWord('skipped')}> Пропуск </Button>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h2>
-              <Button onClick={pauseTimer}>Пауза</Button>
-              <h2 style={{display:"flex", justifyContent:"center"}}>Отладочные кнопки:</h2>
-              <Link to={'/result'}>
-                <Button>
-                  Закончить игру 
-                </Button>
-              </Link>
-
-              <Button onClick={() => setTimer(0)}>
-                Пропустить ход до следующей команды
-              </Button>
-            </Container>
+      
+      { isActive ?
+        <div style={{marginBottom:"200px"}}>
+          <Container style={{display:"flex", flexDirection:"column", gap:"10px"}}>
+            <h2 style={{display:"flex", justifyContent:"center", wordBreak:"break-all"}}>{currentTeam.name}</h2>
+            <h2 style={{display:"flex", justifyContent:"center", borderBottom:"0.2rem solid rgb(220,220,220)", paddingBottom:"10px"}}>
+              {words[currentWordIndex]?.value || 'No more words'}</h2>
+            <Button  onClick={() => handleOnClickNextWord('guessed')}>
+              Правильно
+            </Button>
+            <Button onClick={() => handleOnClickNextWord('skipped')}> Пропуск </Button>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Оставшееся время: {timer}</h3>
+            {
+              thisIsLastWord ?
+              <h3 style={{display:"flex", justifyContent:"center"}}>Это последнее слово!</h3> :
+              <></>
+            }
+            <Button onClick={pauseTimer}>Пауза</Button>
             
-            <Modal isOpen={isModalResultsOpen} onClose={closeModalResults}>
-              <CellForScore
-                team_name={currentTeam.name}
-                settings={settings}
-                Gnumber={currentGuessedWords.length}
-                Snumber={currentSkippedWords.length}
-              />
-              <h2>Угаданные слова: {currentGuessedWords.map((word, index) => {
-                return index !== currentGuessedWords.length-1
-                ?  word + ', '
-                : word
-              })}</h2>
-              <h2>Пропущенные слова: {currentSkippedWords.map((word, index) => {
-                return index !== currentSkippedWords.length-1
-                ?  word + ', '
-                : word
-              })}</h2>
-            </Modal>
+            <div>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Угадано слов: {currentTeam.guessedWords.length}</h3>
+            <h3 style={{display:"flex", justifyContent:"center"}}>Пропущено слов: {currentTeam.skippedWords.length}</h3>
+            <h3 style={{display:"flex", justifyContent:"center"}}>{
+              settings.wordsCountToWin - currentTeam.score > 0 ?
+                `Осталось до победы: ${settings.wordsCountToWin - currentTeam.score}` :
+                `Осталось до победы: ${0}`
+            }</h3>
+            </div>
+            {/* Отладочная кнопка*/}
+            {/* <Button onClick={() => setTimer(0)}>
+              Пропустить ход до следующей команды
+            </Button> */}
+          </Container>
+          
+          <Modal className="modalResult" isOpen={isModalResultsOpen} onClose={closeModalResults}>
+            <CellForScore
+              team_name={currentTeam.name}
+              settings={settings}
+              score={`Счёт этого раунда: ${localScore}`}
+              rest={`Общий счёт: ${currentTeam.score}`}
+            />
+            <h3>Угаданные слова: {currentGuessedWords.map((word, index) => {
+              return index !== currentGuessedWords.length-1
+              ?  word + ', '
+              : word
+            })}</h3>
+            <h3>Пропущенные слова: {currentSkippedWords.map((word, index) => {
+              return index !== currentSkippedWords.length-1
+              ?  word + ', '
+              : word
+            })}</h3>
+          </Modal>
 
-            <Modal isOpen={isModalTeamPickerOpen} onClose={closeModalTeamPicker} buttonText={'Никому'}>
-              <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
-                <Cell content={<TextBox title={`Выберете команду, которой достанется очко за угаданное слово "${words[currentWordIndex]?.value}"`} ></TextBox>} />
-                {
-                  teams.map((team) => {
-                    return <Button onClick={() => {
-                      team.guessedWords.push(words[currentWordIndex]?.value);
-                      closeModalTeamPicker();
-                    }}>{team.name}</Button>
-                  })
-                }
-              </div>
-            </Modal>
-          </div>
-        :
+          <Modal isOpen={isModalTeamPickerOpen} onClose={closeModalTeamPicker} buttonText={'Никому'}>
+            <div style={{display:"flex", flexDirection:"column", gap:"10px"}}>
+              <Cell content={<TextBox title={`Выберете команду, которой достанется очко за угаданное слово "${words[currentWordIndex]?.value}"`} ></TextBox>} />
+              {
+                store.getState().teamsArray.map((team) => {
+                  return <Button onClick={() => {
+                    if (currentTeam.id === team.id) {
+                      addGuessedWord(words[currentWordIndex]?.value);
+                      addCurrentGuessedWord(words[currentWordIndex]?.value);
+                    } else {
+                      // console.log('store.dispatch(addOneWord(currentTeam.id, words[currentWordIndex]?.value))!!!');
+                      store.dispatch(addOneWord(team.id, words[currentWordIndex]?.value));
+                      console.log(store.getState().teamsArray);
+                    }
+                    closeModalTeamPicker();
+                  }}>{team.name}</Button>
+                })
+              }
+            </div>
+          </Modal>
+        </div>
+      :
         <div>
           <Container style={{display:"flex", flexDirection:"column", alignItems:"center"}}>
-            <h2>Играет: {currentTeam.name}</h2>
+            <h2 style={{wordBreak:"break-all"}}>Сейчас Играет</h2>
+            <h2 style={{wordBreak:"break-all"}}>{currentTeam.name}</h2>
             <Button onClick={startTimer}>
-                Начать игру
+                {
+                  isStarted
+                  ? 'Продолжить игру'
+                  : 'Начать игру'
+                }
             </Button>
+            <h3>Общий счёт</h3>
+            {store.getState().teamsArray.map((team) => {
+              return (
+                <div style={{display:"flex", alignItems:"center", justifyContent:"space-between", gap:"15px"}}>
+                    <TextBox style={{wordBreak:"break-all"}} title={`${team.name}`} />
+                    <TextBox title={team.score} />
+                    
+                </div>
+              )
+            })}
+        <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
           </Container>
         </div>
-      :  
-        <h2>Loading...</h2>
       }
     </>
   )
