@@ -8,7 +8,7 @@ import CellForScore from '../components/cellForScore/CellForScore';
 
 
 
-function Result() {
+function Result({send_action_value}) {
     const navigate = useNavigate();
     const teams = store.getState().teamsArray;
     const settings = store.getState().settings;
@@ -30,18 +30,16 @@ function Result() {
                         <div style={{backgroundColor:"white", height:"3px", marginTop:"10px"}}></div>
                         <CellForScore
                             team_name={team.name}
-                            settings={settings}
-                            Gnumber={team.guessedWords.length}
-                            Snumber={team.skippedWords.length}
+                            score={`Общий счёт: ${team.score}`}
                         />
-                        <h3>
-                            Угаданные слова: {team.guessedWords.map((word, index) => {
+                        <h2 style={{fontStyle:"italic"}}>Угаданные слова:</h2>
+                            <h3> {team.guessedWords.map((word, index) => {
                                 return index !== team.guessedWords.length-1
                                 ?  word + ', '
                                 : word
                             })}
                         </h3>
-                        <h2> Пропущенные слова:</h2>
+                        <h2 style={{fontStyle:"italic"}}> Пропущенные слова:</h2>
                         <h3>
                         {team.skippedWords.map((word, index) => {
                                 return index !== team.skippedWords.length-1
@@ -56,6 +54,7 @@ function Result() {
             <Button onClick={() => {
                 store.dispatch({type: 'RESET'});
                 navigate('/');
+                send_action_value('startOver', null);
             }}>
                 Начать новую игру
             </Button>

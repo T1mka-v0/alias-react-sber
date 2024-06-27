@@ -145,6 +145,7 @@ function dispatchAssistantAction(command) {
 
       // настройки
       case 'set_duration':
+        store.dispatch(setRoundDuration(parseInt(command.action.payload.value, 10)));
         console.log(
           'Запрос на установление длительности раунда: ',
           command.action.payload.value
@@ -225,7 +226,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: 'game',
-        element: <Game />,
+        element: <Game/>,
       },
       {
         path: 'rules',
@@ -233,7 +234,7 @@ export const router = createBrowserRouter([
       },
       {
         path: '/',
-        element: <App />,
+        element: <App send_action_value={send_action_value} />,
         errorElement: <ErrorPage />,
       },
       {
@@ -242,7 +243,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'result',
-        element: <Result />,
+        element: <Result send_action_value={send_action_value} />,
       }
     ],
   },

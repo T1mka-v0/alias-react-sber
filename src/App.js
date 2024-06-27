@@ -8,7 +8,7 @@ import { Button, Container } from '@salutejs/plasma-ui';
 import { GlobalStyle } from './styles/GlobalStyle';
 //import { send_action_value, assistant } from './assistant';
 
-function App() {
+function App({send_action_value}) {
 
   return (
     <div className="App" style={{display:"flex", flexDirection:"column", alignContent:"center", justifyContent:"center"}}>
@@ -20,7 +20,7 @@ function App() {
               <Link to={'settings'}>
                 <Button style={{width:"100%"}}
                   onClick={() => {
-                    //send_action_value('to_settings', 1);
+                    send_action_value('openSettings', null);
                   }}
                 >Настроить игру</Button>
               </Link>
@@ -29,7 +29,10 @@ function App() {
           <li>
             <Container style={{padding:"16px 64px"}}>
               <Link to={'rules'}>
-                <Button style={{width:"100%"}}>
+                <Button style={{width:"100%"}}
+                onClick={() => {
+                  send_action_value('openRules', null);
+                }}>
                   Правила
                 </Button>
               </Link>

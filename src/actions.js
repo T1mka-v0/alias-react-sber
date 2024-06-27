@@ -38,15 +38,27 @@ export const renameTeam = (id, newName) => {
 }
 
 // Обновить счет команды и добавить им угаданные слова
-export const updateScore = (id, newGuessedWords, newSkippedWords, score) => {
+export const updateScore = (id, guessedWords, skippedWords, score) => {
     return {
         type: "UPDATE_SCORE",
         payload: {
             team: {
                 id: id,
-                guessedWords: newGuessedWords,
-                skippedWords: newSkippedWords,
+                guessedWords: guessedWords,
+                skippedWords: skippedWords,
                 score: score
+            }
+        }
+    }
+}
+
+export const addOneWord = (id, word) => {
+    return {
+        type: "ADD_ONE_WORD",
+        payload: {
+            team: {
+                id: id,
+                word: word
             }
         }
     }

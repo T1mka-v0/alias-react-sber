@@ -6,7 +6,7 @@ function CellForScore({team_name, settings, score, rest}) {
     <>
       <h3>{team_name} </h3>
       <h3>{score}</h3>
-      {rest}
+      <h3>{rest}</h3>
     </>
   )
 }

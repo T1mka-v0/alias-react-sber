@@ -45,11 +45,18 @@ const reducer = (state = initialState, action) => {
       })
     case 'UPDATE_SCORE':
       let updatedTeam = state.teamsArray.find(team => team.id === action.payload.team.id);
-      updatedTeam.guessedWords?.push(...action.payload.team.guessedWords);
-      updatedTeam.skippedWords?.push(...action.payload.team.skippedWords);
+      updatedTeam.guessedWords = action.payload.team.guessedWords;
+      updatedTeam.skippedWords = action.payload.team.skippedWords;
       updatedTeam.score = action.payload.team.score;
       return Object.assign({}, state, {
         teamsArray: state.teamsArray.map(team => team.id === action.payload.team.id ? updatedTeam : team)
+      })
+    case 'ADD_ONE_WORD':
+      let superTeam = state.teamsArray.find(team => team.id === action.payload.team.id);
+      superTeam.guessedWords.push(action.payload.team.word);
+      superTeam.score++;
+      return Object.assign({}, state, {
+        teamsArray: state.teamsArray.map(team => team.id === action.payload.team.id ? superTeam : team)
       })
     case 'SET_NEW_ID':
       let i = 0;
@@ -91,7 +98,27 @@ const reducer = (state = initialState, action) => {
     
       // Возврат изначальных настроек
     case 'RESET':
-      return initialState;
+      return Object.assign({}, initialState, 
+        {settings: initialState.settings},
+        {teamsArray: [
+          {
+            id: 1,
+            name: 'Red Hot Chilly Peppers',
+            guessedWords: [],
+            skippedWords: [],
+            score: 0
+          },
+          {
+            id: 2,
+            name: 'Green Picky Cucumbers',
+            guessedWords: [],
+            skippedWords: [],
+            score: 0
+          }
+        ]},
+        {teamId: initialState.teamId}
+      );
+      //return initialState;
       
     default:
       return state;

@@ -271,7 +271,7 @@ function Settings({send_action_value}) {
           disabled={teams.length <= 1}
           onClick={() => {
             navigate('/game')
-            send_action_value('start_game', 1);
+            send_action_value('startGame', null);
           }}
         >
         </Button>
